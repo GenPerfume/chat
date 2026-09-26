@@ -380,6 +380,24 @@
             flex-direction: column;
         }
         #tool-jpg-panel.active { display: flex; }
+
+        #tool-solution-panel {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+            padding: 0;
+            min-height: 0;
+        }
+        #tool-solution-panel.active { display: flex; }
+        #tool-solution-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 0 0 22px 22px;
+            background: #0a1022;
+        }
+
         .chat-view-hidden { display: none !important; }
 
         .jpg-tool-box {
@@ -1368,7 +1386,7 @@
                     </div>
                 </div>
 
-                <div class="magnetic-wrap relative" data-glow-start="rgba(236, 72, 153, 0.55)" data-glow-end="rgba(244, 63, 94, 0.65)" data-glow-aura="rgba(236, 72, 153, 0.5)" data-laser="#ec4899">
+                <div class="magnetic-wrap relative" data-glow-start="rgba(236, 72, 153, 0.55)" data-glow-end="rgba(244, 63, 94, 0.65)" data-glow-aura="rgba(236, 72, 153, 0.5)" data-laser="#ec4899" onclick="window.showSolutions()">
                     <div class="laser-border-beam"></div>
                     <div class="menu-item-card px-4 py-2 cursor-pointer">
                         <div class="light-streak"></div>
@@ -1445,7 +1463,7 @@
         <div id="mobile-dropdown" class="hidden lg:hidden w-full mt-2 promax-navbar rounded-2xl p-3 flex-col gap-1.5 z-50 relative">
             <a href="#" onclick="window.showChatView(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-comments text-indigo-400"></i> Chat AI</a>
             <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-microchip text-cyan-400"></i> Công Cụ AI</a>
-            <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-layer-group text-pink-400"></i> Giải Pháp</a>
+            <a href="#" onclick="window.showSolutions(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-layer-group text-pink-400"></i> Giải Pháp</a>
             <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-gem text-amber-400"></i> Bảng Giá</a>
             <a href="#" onclick="window.showJpgTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-image text-red-400"></i> Chuyển ảnh JPG</a>
             <a href="#" onclick="window.showTextTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-font text-purple-400"></i> Chuyển dạng chữ</a>
@@ -1499,6 +1517,18 @@
                     <button class="send-btn" id="send"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                 </div>
                 <div class="hint">Tích hợp Google Gen AI SDK · Gemini 3.1 Pro Preview</div>
+            </div>
+
+
+            <!-- GIẢI PHÁP - embed trang DigitalGroup -->
+            <div id="tool-solution-panel">
+                <iframe
+                    id="solution-frame"
+                    src="https://genperfume.github.io/chat/DigitalGroup.html"
+                    title="Giải Pháp DigitalGroup"
+                    allow="clipboard-write; fullscreen"
+                    loading="lazy">
+                </iframe>
             </div>
 
             <!-- JPG CONVERTER TOOL PANEL -->
@@ -2015,7 +2045,7 @@ function closeMobileMenu() {
 }
 
 function hideAllTools() {
-    var ids = ['tool-jpg-panel', 'tool-text-panel', 'tool-geo-panel', 'tool-replace-panel'];
+    var ids = ['tool-jpg-panel', 'tool-text-panel', 'tool-geo-panel', 'tool-replace-panel', 'tool-solution-panel'];
     ids.forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.classList.remove('active');
@@ -2052,6 +2082,12 @@ window.showChatView = function () {
     if (title) title.textContent = '✨ Trợ lý AI DigitalGroup';
     if (badge) badge.innerHTML = '<i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi ↔ Đáp';
     closeMobileMenu();
+};
+
+
+window.showSolutions = function () {
+    showToolPanel('tool-solution-panel', '🧩 Giải Pháp',
+        '<i class="fa-solid fa-layer-group text-pink-400 mr-1"></i> DigitalGroup');
 };
 
 window.showJpgTool = function () {
