@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DigitalGroup - Pro Max AI Chatbot</title>
     
     <!-- Tailwind CSS CDN -->
@@ -18,6 +18,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- IMPORT MAP CHO GOOGLE GEN AI SDK -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.run/@google/genai"
+        }
+      }
+    </script>
 
     <style>
         * {
@@ -35,8 +44,6 @@
             background-color: #030014;
             color: #eef4ff;
             overflow: hidden;
-            -webkit-text-size-adjust: 100%;
-            -webkit-tap-highlight-color: transparent;
         }
 
         /* Nền Lưới Không Gian 3D Mesh Grid */
@@ -172,6 +179,32 @@
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }
 
+        /* Dropdown Mega-Menu */
+        .mega-dropdown-panel {
+            position: absolute;
+            top: calc(100% + 16px);
+            left: 50%;
+            transform: translateX(-50%) rotateX(-15deg) scale(0.9) translateZ(-50px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(13, 12, 34, 0.92);
+            backdrop-filter: blur(30px) saturate(210%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(168, 85, 247, 0.2);
+            border-radius: 1.5rem;
+            transform-origin: top center;
+            z-index: 100;
+        }
+
+        .magnetic-wrap:hover .mega-dropdown-panel {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) rotateX(0deg) scale(1) translateZ(0);
+        }
+
         /* CTA Button Pro Max */
         .cta-promax-btn {
             position: relative;
@@ -208,20 +241,26 @@
             100% { transform: scale(1.15); opacity: 0; }
         }
 
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
         /* CHAT LAYOUT STYLES */
         .app-container {
-            height: 100%;
-            height: 100dvh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 10px 12px 12px 12px;
-            padding-top: max(10px, env(safe-area-inset-top));
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-            padding-left: max(12px, env(safe-area-inset-left));
-            padding-right: max(12px, env(safe-area-inset-right));
-            gap: 10px;
-            max-width: 100vw;
-            box-sizing: border-box;
+            padding: 12px 18px 18px 18px;
+            gap: 12px;
         }
 
         .chat-layout {
@@ -266,7 +305,7 @@
 
         .messages { flex: 1; overflow: auto; padding: 24px 8%; display: flex; flex-direction: column; gap: 18px; }
         .msg { display: flex; gap: 11px; max-width: 800px; }
-        .avatar { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(135deg, #10a37f, #1a7f64); font-size: 14px; }
+        .avatar { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(135deg, #3bc7ff, #7862ff); font-size: 14px; }
         .bubble { line-height: 1.65; font-size: 14px; color: #d7e1f4; white-space: pre-wrap; word-break: break-word; }
         .user { align-self: flex-end; flex-direction: row-reverse; }
         .user .bubble { background: linear-gradient(135deg, #273a70, #493b86); padding: 12px 15px; border-radius: 17px 5px 17px 17px; color: #fff; }
@@ -279,17 +318,931 @@
         .input-wrap { display: flex; align-items: center; gap: 9px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.055); padding: 8px 9px 8px 15px; border-radius: 16px; box-shadow: inset 0 1px rgba(255,255,255,.06); }
         .input-wrap input { flex: 1; background: none; border: 0; outline: 0; color: #fff; font-size: 13px; }
         .input-wrap input::placeholder { color: #64718c; }
-        .send-btn { width: 39px; height: 39px; border: 0; border-radius: 12px; background: linear-gradient(135deg, #10a37f, #0d8a6a); color: white; cursor: pointer; box-shadow: 0 8px 20px rgba(16,163,127,.25); }
+        .tool-btn { border: 0; background: transparent; color: #8795b1; font-size: 18px; cursor: pointer; }
+        .send-btn { width: 39px; height: 39px; border: 0; border-radius: 12px; background: linear-gradient(135deg, #5bdbff, #7465ff); color: white; cursor: pointer; box-shadow: 0 8px 20px rgba(88,151,255,.25); }
         .hint { text-align: center; color: #56647d; font-size: 9px; margin-top: 8px; }
 
-        .cta-wrap { position: relative; z-index: 120; }
 
+        /* ===== JPG CONVERTER TOOL (dark theme fit) ===== */
+        #tool-jpg-panel {
+            display: none;
+            flex: 1;
+            overflow: auto;
+            padding: 18px 20px;
+            flex-direction: column;
+        }
+        #tool-jpg-panel.active { display: flex; }
+        .chat-view-hidden { display: none !important; }
+
+        .jpg-tool-box {
+            background: rgba(15, 20, 40, 0.85);
+            border: 1px solid rgba(238, 17, 51, 0.45);
+            border-radius: 16px;
+            padding: 18px 16px;
+            box-shadow: 0 8px 32px rgba(238, 17, 51, 0.12), 0 0 40px rgba(168, 85, 247, 0.08);
+            max-width: 920px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .jpg-tool-box h2 {
+            margin: 0 0 16px;
+            color: #ff4d6d;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+        }
+        .jpg-layout {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+        .jpg-left, .jpg-right {
+            flex: 1 1 0;
+            min-width: 0;
+            width: 50%;
+            max-width: 50%;
+        }
+        .jpg-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .jpg-tool-box label {
+            display: block;
+            margin: 10px 0 4px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #a8b8d8;
+        }
+        .jpg-tool-box input[type="url"],
+        .jpg-tool-box input[type="text"],
+        .jpg-tool-box input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.05);
+            color: #e8eef8;
+        }
+        .jpg-tool-box input:focus {
+            border-color: #ee1133;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(238, 17, 51, 0.2);
+        }
+        .jpg-tool-box input[type="file"] {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .jpg-or {
+            text-align: center;
+            margin: 10px 0;
+            color: #64748b;
+            font-size: 11px;
+        }
+        .jpg-go-btn {
+            background: linear-gradient(135deg, #ee1133, #c01140);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 700;
+            margin-top: 12px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 6px 20px rgba(238, 17, 51, 0.35);
+        }
+        .jpg-go-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(238, 17, 51, 0.45); }
+        .jpg-go-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
+        .jpg-status {
+            margin: 0;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: none;
+        }
+        .jpg-status.info { background: rgba(59, 130, 246, 0.15); color: #93c5fd; display: block; border: 1px solid rgba(59,130,246,0.3); }
+        .jpg-status.ok { background: rgba(34, 197, 94, 0.15); color: #86efac; display: block; border: 1px solid rgba(34,197,94,0.3); }
+        .jpg-status.err { background: rgba(239, 68, 68, 0.15); color: #fca5a5; display: block; border: 1px solid rgba(239,68,68,0.3); }
+        .jpg-placeholder {
+            flex: 1;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 20px 16px;
+            color: #94a3b8;
+        }
+        .jpg-placeholder .ph-icon { font-size: 36px; margin-bottom: 8px; }
+        .jpg-placeholder .ph-title { font-size: 13px; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; }
+        .jpg-placeholder .ph-desc { font-size: 11px; line-height: 1.45; max-width: 240px; color: #64748b; }
+        .jpg-preview {
+            margin: 0;
+            text-align: center;
+            display: none;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 14px;
+            flex: 1;
+        }
+        .jpg-preview img {
+            max-width: 100%;
+            max-height: 220px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin: 0 auto 10px;
+            display: block;
+        }
+        .jpg-dl {
+            display: inline-block;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+        }
+        .jpg-dl:hover { filter: brightness(1.08); }
+        .jpg-note {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 12px;
+            line-height: 1.45;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .jpg-fileinfo { font-size: 12px; color: #94a3b8; margin-bottom: 10px; line-height: 1.5; }
+        .jpg-fileinfo b { color: #e2e8f0; }
+        @media (max-width: 700px) {
+            .jpg-left, .jpg-right {
+                width: 100%;
+                max-width: 100%;
+                flex: 1 1 100%;
+            }
+            .jpg-placeholder { min-height: 140px; }
+        }
+
+        /* CTA dropdown panel */
+        .cta-wrap {
+            position: relative;
+            z-index: 120;
+        }
+        .cta-dropdown-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 240px;
+            padding-top: 10px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 200;
+        }
+        /* bridge vô hình giữ hover khi rê từ nút xuống menu */
+        .cta-dropdown-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
+        .cta-dropdown-inner {
+            background: rgba(13, 12, 34, 0.97);
+            backdrop-filter: blur(30px) saturate(210%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 30px rgba(168, 85, 247, 0.2);
+            border-radius: 1rem;
+            padding: 8px;
+        }
+        .cta-wrap:hover .cta-dropdown-panel,
+        .cta-wrap:focus-within .cta-dropdown-panel {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        .cta-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            border: 1px solid transparent;
+            user-select: none;
+        }
+        .cta-menu-item:hover {
+            background: rgba(238, 17, 51, 0.12);
+            border-color: rgba(238, 17, 51, 0.35);
+        }
+        .cta-menu-item.cta-item-text:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+        .cta-menu-item .cta-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: rgba(238, 17, 51, 0.2);
+            color: #ff6b81;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .cta-menu-item.cta-item-text .cta-icon {
+            background: rgba(139, 92, 246, 0.25);
+            color: #c4b5fd;
+        }
+        .cta-menu-item h4 { font-size: 12px; font-weight: 700; color: #fff; margin: 0; }
+        .cta-menu-item p { font-size: 10px; color: #94a3b8; margin: 2px 0 0; }
+
+        /* ===== TEXT CASE CONVERTER TOOL ===== */
+        #tool-text-panel {
+            display: none;
+            flex: 1;
+            overflow: auto;
+            padding: 18px 20px;
+            flex-direction: column;
+        }
+        #tool-text-panel.active { display: flex; }
+
+        .kw-tool-box {
+            --kw-primary: #8b5cf6;
+            --kw-secondary: #ec4899;
+            --kw-border: rgba(255, 255, 255, 0.12);
+            --kw-text: #f8fafc;
+            --kw-muted: #94a3b8;
+            max-width: 640px;
+            margin: 0 auto;
+            width: 100%;
+            background: rgba(15, 20, 40, 0.9);
+            border-radius: 16px;
+            border: 1px solid var(--kw-border);
+            padding: 20px 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(139, 92, 246, 0.1);
+        }
+        .kw-tool-box h2 {
+            margin: 0 0 6px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(135deg, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .kw-sub {
+            text-align: center;
+            color: var(--kw-muted);
+            font-size: 12px;
+            margin: 0 0 16px;
+        }
+        .kw-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .kw-label-row label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--kw-text);
+        }
+        .kw-counter {
+            font-size: 11px;
+            color: var(--kw-muted);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        .kw-tool-box textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--kw-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: var(--kw-text);
+            font-size: 14px;
+            line-height: 1.5;
+            font-family: inherit;
+        }
+        .kw-tool-box textarea:focus {
+            border-color: var(--kw-primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+        }
+        .kw-opts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            margin: 12px 0 14px;
+            font-size: 12px;
+            color: var(--kw-muted);
+        }
+        .kw-opts label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .kw-opts input { accent-color: #8b5cf6; }
+        .kw-go {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            margin-bottom: 14px;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .kw-go:hover { opacity: 0.92; }
+        .kw-go:active { transform: scale(0.98); }
+        .kw-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid var(--kw-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+        .kw-card-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #a78bfa;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .kw-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .kw-card-text {
+            font-family: ui-monospace, "Cascadia Code", monospace;
+            font-size: 13px;
+            color: var(--kw-text);
+            word-break: break-all;
+            flex: 1;
+            min-width: 0;
+        }
+        .kw-copy {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--kw-border);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .kw-copy:hover { background: #8b5cf6; border-color: #8b5cf6; }
+        .kw-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(40px);
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .kw-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== GEOTAG TOOL ===== */
+        #tool-geo-panel {
+            display: none;
+            flex: 1;
+            overflow: auto;
+            padding: 14px 16px;
+            flex-direction: column;
+        }
+        #tool-geo-panel.active { display: flex; }
+        .geo-tool-box {
+            --geo-panel: rgba(30, 41, 59, 0.85);
+            --geo-border: rgba(255,255,255,0.1);
+            --geo-accent: #38bdf8;
+            --geo-muted: #94a3b8;
+            max-width: 960px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .geo-tool-box h2 {
+            margin: 0 0 4px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .geo-sub { text-align: center; color: var(--geo-muted); font-size: 12px; margin-bottom: 12px; }
+        .geo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+        .geo-card {
+            background: var(--geo-panel);
+            border: 1px solid var(--geo-border);
+            border-radius: 12px;
+            padding: 12px;
+            min-width: 0;
+        }
+        .geo-card h4 {
+            margin: 0 0 12px;
+            font-size: 0.9rem;
+            color: var(--geo-accent);
+            border-bottom: 1px solid var(--geo-border);
+            padding-bottom: 8px;
+        }
+        .geo-fg { margin-bottom: 10px; }
+        .geo-fg label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+            color: var(--geo-muted);
+        }
+        .geo-fg input, .geo-fg textarea {
+            width: 100%;
+            padding: 8px 10px;
+            background: #0f172a;
+            border: 1px solid var(--geo-border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .geo-fg input:focus, .geo-fg textarea:focus { border-color: var(--geo-accent); }
+        .geo-url-row { display: flex; gap: 8px; align-items: stretch; }
+        .geo-url-row input { flex: 1 1 auto; min-width: 0; }
+        .geo-url-btn {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background: #0ea5e9;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .geo-url-btn:hover { background: #0284c7; }
+        .geo-upload {
+            position: relative;
+            border: 2px dashed var(--geo-border);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            background: rgba(15,23,42,0.5);
+            cursor: pointer;
+        }
+        .geo-upload:hover { border-color: var(--geo-accent); }
+        .geo-upload input[type=file] {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            opacity: 0; cursor: pointer;
+        }
+        .geo-preview {
+            width: 100%; height: 140px; margin-top: 8px;
+            border-radius: 8px; overflow: hidden;
+            display: none; align-items: center; justify-content: center;
+            background: #000;
+        }
+        .geo-preview .geo-thumb {
+            width: 56px; height: 56px; object-fit: cover;
+            border-radius: 6px; border: 1px solid #334155;
+            flex-shrink: 0;
+        }
+        .geo-preview .geo-count {
+            color: #94a3b8; font-size: 0.75rem; width: 100%; text-align: center; margin-top: 2px;
+        }
+        #geoMap {
+            height: 180px; width: 100%; border-radius: 8px;
+            border: 1px solid var(--geo-border); z-index: 1;
+        }
+        .geo-stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+        .geo-stars input { display: none; }
+        .geo-stars label {
+            font-size: 1.2rem; color: #475569; cursor: pointer;
+            text-transform: none; letter-spacing: 0;
+        }
+        .geo-stars input:checked ~ label,
+        .geo-stars label:hover,
+        .geo-stars label:hover ~ label { color: #f59e0b; }
+        .geo-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            color: #fff; border: none; padding: 12px;
+            border-radius: 10px; font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; margin-top: 10px;
+        }
+        .geo-submit:hover { opacity: 0.92; }
+        @media (max-width: 720px) {
+            .geo-container { grid-template-columns: 1fr; }
+        }
+
+        /* ===== FIND & REPLACE TOOL ===== */
+        #tool-replace-panel {
+            display: none;
+            flex: 1;
+            overflow: auto;
+            padding: 14px 16px;
+            flex-direction: column;
+        }
+        #tool-replace-panel.active { display: flex; }
+        .br-tool-box {
+            max-width: 820px;
+            margin: 0 auto;
+            width: 100%;
+            background: linear-gradient(145deg, rgba(11,15,25,0.9), rgba(17,24,39,0.85) 50%, rgba(30,16,53,0.85));
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .br-title {
+            font-size: 1.15rem; font-weight: 800; margin: 0 0 4px;
+            background: linear-gradient(90deg, #c084fc, #f472b6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-align: center;
+        }
+        .br-sub { text-align: center; font-size: 11px; color: #94a3b8; margin: 0 0 12px; }
+        .br-toolbar {
+            background: rgba(15,23,42,0.55);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 12px; margin-bottom: 12px;
+        }
+        .br-opts {
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+            margin-bottom: 10px; font-size: 12px; color: #cbd5e1;
+        }
+        .br-opts label { display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
+        .br-opts input[type=checkbox] { accent-color: #a855f7; cursor: pointer; }
+        .br-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .br-btn {
+            border: none; padding: 9px 14px; border-radius: 9px;
+            font-weight: 700; font-size: 12px; cursor: pointer; color: #fff;
+        }
+        .br-btn-add { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 3px 0 #064e3b; }
+        .br-btn-run { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 3px 0 #1e3a8a; padding: 9px 18px; }
+        .br-btn-copy { background: linear-gradient(135deg, #8b5cf6, #7c3aed); box-shadow: 0 3px 0 #4c1d95; }
+        .br-btn-cleartext { background: linear-gradient(135deg, #64748b, #475569); box-shadow: 0 3px 0 #334155; }
+        .br-hint {
+            font-size: 11px; color: #94a3b8; margin: 0 0 10px; line-height: 1.45;
+            padding: 8px 10px; background: rgba(168,85,247,0.08);
+            border: 1px solid rgba(168,85,247,0.2); border-radius: 8px;
+        }
+        .br-hint strong { color: #e9d5ff; }
+        .br-rules { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .br-rule {
+            display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end;
+            background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; padding: 10px;
+        }
+        @media (max-width: 520px) { .br-rule { grid-template-columns: 1fr; } }
+        .br-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .br-field label { font-size: 10px; font-weight: 700; color: #a78bfa; text-transform: uppercase; }
+        .br-field input, .br-field textarea {
+            width: 100%; box-sizing: border-box;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            padding: 8px 10px; border-radius: 8px; color: #fff; font-size: 12px;
+            outline: none; font-family: ui-monospace, monospace; resize: vertical;
+        }
+        .br-field input:focus, .br-field textarea:focus { border-color: #a855f7; }
+        .br-field textarea { min-height: 48px; }
+        .br-del {
+            background: #ef4444; color: #fff; border: none;
+            width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-weight: 700; align-self: end;
+        }
+        .br-ws-head {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 8px; margin-bottom: 8px;
+        }
+        .br-ws-label { color: #94a3b8; font-size: 12px; }
+        .br-badge {
+            background: rgba(168,85,247,0.2); color: #e9d5ff;
+            padding: 4px 10px; border-radius: 20px; font-size: 11px;
+            border: 1px solid rgba(168,85,247,0.3);
+        }
+        #brMainText {
+            width: 100%; height: 260px; box-sizing: border-box;
+            background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px; padding: 12px; color: #f1f5f9;
+            font-size: 13px; line-height: 1.55; resize: vertical; outline: none;
+            white-space: pre-wrap; font-family: ui-monospace, monospace;
+        }
+        #brMainText:focus { border-color: #a855f7; }
+        .br-extra { margin: 10px 0 0; font-size: 12px; color: #94a3b8; }
+        .br-extra button {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+            color: #e2e8f0; padding: 6px 12px; border-radius: 8px; cursor: pointer;
+            font-size: 12px; margin-right: 4px;
+        }
+        .br-extra button:hover { background: #7c3aed; border-color: #7c3aed; }
+
+        .cta-menu-item.cta-item-geo:hover {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+        .cta-menu-item.cta-item-geo .cta-icon {
+            background: rgba(56, 189, 248, 0.2);
+            color: #7dd3fc;
+        }
+        .cta-menu-item.cta-item-replace:hover {
+            background: rgba(168, 85, 247, 0.12);
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+        .cta-menu-item.cta-item-replace .cta-icon {
+            background: rgba(168, 85, 247, 0.2);
+            color: #d8b4fe;
+        }
+
+        /* ===== 3D SPARKLE STARS ===== */
+        .star-widget {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 50;
+            cursor: pointer;
+            width: 52px;
+            height: 52px;
+        }
+        .star-3d {
+            width: 52px;
+            height: 52px;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            position: relative;
+            transition: transform 0.3s ease;
+            animation: starFloat 3.5s ease-in-out infinite;
+        }
+        .star-widget:hover .star-3d {
+            transform: scale(1.18) rotate(8deg);
+        }
+        .star-3d::before {
+            content: '';
+            position: absolute;
+            top: 14%;
+            left: 32%;
+            width: 12px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            transform: rotate(-28deg);
+            filter: blur(0.8px);
+        }
+        .star-gold {
+            background: linear-gradient(145deg, #fff8dc 0%, #ffd700 35%, #ffb700 60%, #ff8c00 100%);
+            box-shadow:
+                inset -4px -4px 8px rgba(0,0,0,0.35),
+                inset 4px 4px 10px rgba(255,255,255,0.7),
+                0 0 14px rgba(255, 215, 0, 0.7),
+                0 0 28px rgba(255, 180, 0, 0.45);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.85));
+            animation: starFloat 3.5s ease-in-out infinite, goldShine 2s ease-in-out infinite alternate;
+        }
+        .star-red {
+            background: linear-gradient(145deg, #ffe4e6 0%, #ff4d6d 30%, #e11d48 65%, #9f1239 100%);
+            box-shadow:
+                inset -4px -4px 8px rgba(0,0,0,0.4),
+                inset 4px 4px 10px rgba(255,200,200,0.55),
+                0 0 14px rgba(244, 63, 94, 0.75),
+                0 0 28px rgba(225, 29, 72, 0.45);
+            filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.9));
+            animation: starFloat 3.5s ease-in-out infinite, redShine 2s ease-in-out infinite alternate;
+        }
+        @keyframes starFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.04, 0.96); }
+        }
+        @keyframes goldShine {
+            0% { filter: drop-shadow(0 0 8px rgba(255,215,0,0.6)); }
+            100% { filter: drop-shadow(0 0 18px rgba(255,255,200,0.95)) drop-shadow(0 0 24px rgba(255,180,0,0.8)); }
+        }
+        @keyframes redShine {
+            0% { filter: drop-shadow(0 0 8px rgba(244,63,94,0.55)); }
+            100% { filter: drop-shadow(0 0 18px rgba(255,150,170,0.95)) drop-shadow(0 0 24px rgba(225,29,72,0.85)); }
+        }
+
+        /* Sug tool card (red star) */
+        .sug-tool-card {
+            position: absolute;
+            top: 68px;
+            left: 10px;
+            width: min(320px, calc(100% - 24px));
+            background: #fff;
+            color: #0f172a;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.55);
+            display: none;
+            opacity: 0;
+            transform: translateY(-8px) scale(0.96);
+            transition: all 0.28s ease;
+            z-index: 60;
+        }
+        .sug-tool-card.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .sug-tool-card textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 13px;
+            resize: none;
+            margin-bottom: 10px;
+            outline: none;
+            color: #0f172a;
+            background: #f8fafc;
+        }
+        .sug-tool-card textarea:focus { border-color: #e11d48; }
+        .sug-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .sug-btn-grid button {
+            padding: 9px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+        }
+        .sug-btn-grid button:hover { opacity: 0.92; }
+        .btn-add-sug { background: #0284c7; }
+        .btn-remove-sug { background: #0d9488; }
+        .btn-sug-copy { background: #16a34a; }
+        .btn-sug-clear { background: #dc2626; }
+        .sug-toast {
+            color: #16a34a;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 8px;
+            min-height: 16px;
+        }
+
+        /* WebP quick panel (gold star) */
+        .webp-quick-panel {
+            position: absolute;
+            inset: 8px;
+            z-index: 70;
+            background: rgba(15, 23, 42, 0.97);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            border-radius: 14px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .webp-quick-panel.show { display: flex; }
+        .webp-quick-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0,0,0,0.25);
+            flex-shrink: 0;
+        }
+        .webp-quick-head h3 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 800;
+            color: #4ade80;
+        }
+        .webp-quick-close {
+            width: 30px; height: 30px;
+            border: none; border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            color: #94a3b8; cursor: pointer; font-size: 14px;
+        }
+        .webp-quick-close:hover { color: #fff; background: rgba(239,68,68,0.3); }
+        .webp-quick-body {
+            flex: 1;
+            overflow: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .webp-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            background: rgba(30,41,59,0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+        .webp-controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .webp-controls input[type=range] { width: 100px; accent-color: #22c55e; }
+        .webp-drop {
+            border: 2px dashed rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 13px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .webp-drop:hover, .webp-drop.drag {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.08);
+            color: #86efac;
+        }
+        .webp-list { display: flex; flex-direction: column; gap: 8px; }
+        .webp-item {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(30,41,59,0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+        .webp-item img {
+            width: 40px; height: 40px; object-fit: cover;
+            border-radius: 6px; border: 1px solid #334155;
+        }
+        .webp-item .webp-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #e2e8f0; }
+        .webp-item .webp-meta { color: #94a3b8; font-size: 11px; }
+        .webp-item a, .webp-item button {
+            padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+            border: none; cursor: pointer; text-decoration: none; color: #fff;
+        }
+        .webp-dl { background: #16a34a; }
+        .webp-rm { background: transparent; color: #94a3b8 !important; }
+        .webp-actions {
+            display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+        }
+        .webp-actions button {
+            padding: 8px 14px; border: none; border-radius: 8px;
+            font-size: 12px; font-weight: 700; cursor: pointer; color: #fff;
+        }
+        .webp-btn-zip { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .webp-btn-clear { background: #475569; }
+        .webp-saved { color: #4ade80; font-size: 12px; font-weight: 700; }
+
+        #tool-jpg-panel, #tool-text-panel { position: relative; }
+
+        @media(max-width:1050px){ .chat-layout { grid-template-columns: 220px 1fr; } }
         @media(max-width:700px){
-            html, body { overflow: auto; height: auto; min-height: 100dvh; }
-            .app-container { height: auto; min-height: 100dvh; padding: 8px; }
+            html, body { overflow: auto; }
+            .app-container { height: auto; min-height: 100vh; }
             .chat-layout { grid-template-columns: 1fr; }
-            .panel { display: none !important; }
-            .messages { padding: 14px 12px; }
+            .panel { display: none; }
+            .messages { padding: 16px; }
+            .composer { padding: 12px; }
         }
     </style>
 </head>
@@ -306,14 +1259,14 @@
 
             <!-- LOGO BRAND -->
             <a href="#" class="flex items-center gap-3 group z-20 relative">
-                <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 p-[2px] shadow-lg shadow-teal-500/30 group-hover:rotate-12 transition-transform duration-300">
+                <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-lg shadow-purple-500/30 group-hover:rotate-12 transition-transform duration-300">
                     <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-bolt text-lg text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 animate-pulse"></i>
+                        <i class="fa-solid fa-atom text-lg text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-pink-500 animate-spin" style="animation-duration: 8s;"></i>
                     </div>
                 </div>
                 <div class="flex flex-col">
                     <span class="font-cyber text-lg font-black tracking-wider text-white flex items-center gap-1">
-                        DinhPhuStyle<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Worker Proxy</span>
+                        DinhPhuStyle<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30">PRO</span>
                     </span>
                     <span class="text-[9px] text-slate-400 font-mono tracking-widest uppercase">DigitalGroup AI</span>
                 </div>
@@ -321,27 +1274,136 @@
 
             <!-- MENU ITEMS HORIZONTAL LIST -->
             <div class="hidden lg:flex items-center gap-2 z-20">
-                <div class="magnetic-wrap" onclick="window.showChatView()">
+
+                <div class="magnetic-wrap" data-glow-start="rgba(99, 102, 241, 0.55)" data-glow-end="rgba(168, 85, 247, 0.65)" data-glow-aura="rgba(168, 85, 247, 0.5)" data-laser="#a855f7" onclick="window.showChatView()">
+                    <div class="laser-border-beam"></div>
                     <div class="menu-item-card px-4 py-2 cursor-pointer">
+                        <div class="light-streak"></div>
                         <div class="content-layer-3d flex items-center gap-2">
-                            <i class="fa-solid fa-comments text-emerald-400 text-xs"></i>
-                            <span class="text-xs font-bold text-slate-100">Chat ChatGPT</span>
+                            <i class="fa-solid fa-comments icon-pop-3d text-indigo-400 text-xs"></i>
+                            <span class="text-xs font-bold text-slate-100 tracking-wide">Chat AI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="magnetic-wrap relative" data-glow-start="rgba(6, 182, 212, 0.55)" data-glow-end="rgba(59, 130, 246, 0.65)" data-glow-aura="rgba(6, 182, 212, 0.5)" data-laser="#06b6d4">
+                    <div class="laser-border-beam"></div>
+                    <div class="menu-item-card px-4 py-2 cursor-pointer">
+                        <div class="light-streak"></div>
+                        <div class="content-layer-3d flex items-center gap-2">
+                            <i class="fa-solid fa-microchip icon-pop-3d text-cyan-400 text-xs"></i>
+                            <span class="text-xs font-bold text-slate-100 tracking-wide">Công Cụ AI</span>
+                            <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 ml-0.5"></i>
+                        </div>
+                    </div>
+
+                    <div class="mega-dropdown-panel w-[480px] p-4 grid grid-cols-2 gap-2.5">
+                        <div onclick="window.sendSuggestion('Viết bài chuẩn SEO')" class="p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-cyan-500/10 hover:border-cyan-500/40 transition-all cursor-pointer group/sub flex gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 text-base group-hover/sub:scale-110 transition-transform">
+                                <i class="fa-solid fa-pen-nib"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white group-hover/sub:text-cyan-300">Viết Bài Content</h4>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Sáng tạo bài viết, Kịch bản & Email.</p>
+                            </div>
+                        </div>
+
+                        <div onclick="window.sendSuggestion('Viết code Python')" class="p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all cursor-pointer group/sub flex gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0 text-base group-hover/sub:scale-110 transition-transform">
+                                <i class="fa-solid fa-code"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white group-hover/sub:text-indigo-300">Lập Trình Code</h4>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Tạo, sửa lỗi và tối ưu hóa mã nguồn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="magnetic-wrap relative" data-glow-start="rgba(236, 72, 153, 0.55)" data-glow-end="rgba(244, 63, 94, 0.65)" data-glow-aura="rgba(236, 72, 153, 0.5)" data-laser="#ec4899">
+                    <div class="laser-border-beam"></div>
+                    <div class="menu-item-card px-4 py-2 cursor-pointer">
+                        <div class="light-streak"></div>
+                        <div class="content-layer-3d flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group icon-pop-3d text-pink-400 text-xs"></i>
+                            <span class="text-xs font-bold text-slate-100 tracking-wide">Giải Pháp</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="magnetic-wrap" data-glow-start="rgba(245, 158, 11, 0.55)" data-glow-end="rgba(234, 179, 8, 0.65)" data-glow-aura="rgba(245, 158, 11, 0.5)" data-laser="#eab308">
+                    <div class="laser-border-beam"></div>
+                    <div class="menu-item-card px-4 py-2 cursor-pointer">
+                        <div class="light-streak"></div>
+                        <div class="content-layer-3d flex items-center gap-2">
+                            <i class="fa-solid fa-gem icon-pop-3d text-amber-400 text-xs"></i>
+                            <span class="text-xs font-bold text-slate-100 tracking-wide">Bảng Giá</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ACTION BUTTON CTA + DROPDOWN -->
+            <div class="hidden sm:flex items-center gap-3 z-20">
+                <div class="relative group cta-wrap">
+                    <div class="pulse-ring"></div>
+                    <button id="cta-btn-main" onclick="triggerProMaxAction(event)" class="cta-promax-btn px-5 py-2 font-bold text-xs text-white flex items-center gap-2 tracking-wide cursor-pointer overflow-hidden">
+                        <i class="fa-solid fa-bolt-lightning text-yellow-300 animate-bounce"></i>
+                        <span>Siêu ứng dụng</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] opacity-80 ml-0.5"></i>
+                    </button>
+                    <div class="cta-dropdown-panel">
+                        <div class="cta-dropdown-inner">
+                            <div class="cta-menu-item" onclick="event.stopPropagation(); window.showJpgTool();">
+                                <div class="cta-icon"><i class="fa-solid fa-image"></i></div>
+                                <div>
+                                    <h4>Chuyển ảnh JPG</h4>
+                                    <p>Nén &lt;100KB + EXIF 5★</p>
+                                </div>
+                            </div>
+                            <div class="cta-menu-item cta-item-text" onclick="event.stopPropagation(); window.showTextTool();">
+                                <div class="cta-icon"><i class="fa-solid fa-font"></i></div>
+                                <div>
+                                    <h4>Chuyển dạng chữ</h4>
+                                    <p>Slug SEO · Hoa/Thường · Capitalize</p>
+                                </div>
+                            </div>
+                            <div class="cta-menu-item cta-item-geo" onclick="event.stopPropagation(); window.showGeoTool();">
+                                <div class="cta-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                                <div>
+                                    <h4>Geotag Maps</h4>
+                                    <p>Ghi GPS &amp; EXIF cho ảnh</p>
+                                </div>
+                            </div>
+                            <div class="cta-menu-item cta-item-replace" onclick="event.stopPropagation(); window.showReplaceTool();">
+                                <div class="cta-icon"><i class="fa-solid fa-find-replace"></i></div>
+                                <div>
+                                    <h4>Tìm &amp; Thay thế</h4>
+                                    <p>Find / Replace · Regex · HTML</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ACTION BUTTON CTA -->
-            <div class="hidden sm:flex items-center gap-3 z-20">
-                <div class="relative group cta-wrap">
-                    <div class="pulse-ring"></div>
-                    <button class="cta-promax-btn px-5 py-2 font-bold text-xs text-white flex items-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-shield-halved text-yellow-300"></i>
-                        <span>An Toàn & Khép Kín</span>
-                    </button>
-                </div>
-            </div>
+            <!-- Mobile Toggle -->
+            <button id="mobile-toggle" class="lg:hidden z-20 w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white">
+                <i class="fa-solid fa-bars text-sm"></i>
+            </button>
         </nav>
+
+        <div id="mobile-dropdown" class="hidden lg:hidden w-full mt-2 promax-navbar rounded-2xl p-3 flex-col gap-1.5 z-50 relative">
+            <a href="#" onclick="window.showChatView(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-comments text-indigo-400"></i> Chat AI</a>
+            <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-microchip text-cyan-400"></i> Công Cụ AI</a>
+            <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-layer-group text-pink-400"></i> Giải Pháp</a>
+            <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-gem text-amber-400"></i> Bảng Giá</a>
+            <a href="#" onclick="window.showJpgTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-image text-red-400"></i> Chuyển ảnh JPG</a>
+            <a href="#" onclick="window.showTextTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-font text-purple-400"></i> Chuyển dạng chữ</a>
+            <a href="#" onclick="window.showGeoTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-map-location-dot text-sky-400"></i> Geotag Maps</a>
+            <a href="#" onclick="window.showReplaceTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-find-replace text-violet-400"></i> Tìm &amp; Thay thế</a>
+        </div>
     </header>
 
     <!-- MAIN CHAT INTERFACE -->
@@ -350,91 +1412,357 @@
             <button class="new-btn" id="newChat">＋ Cuộc trò chuyện mới</button>
             <div class="section-title">Gần đây</div>
             <div class="history-list" id="history">
-                <button class="active">✨ ChatGPT Assistant<small>Vừa xong</small></button>
+                <button class="active">✨ Thiết kế landing page<small>Vừa xong</small></button>
+                <button>🚀 Ý tưởng startup AI<small>Hôm nay</small></button>
+                <button>📣 Viết nội dung quảng cáo<small>Hôm nay</small></button>
+                <button>🧩 Tối ưu code JavaScript<small>Hôm qua</small></button>
             </div>
         </aside>
 
         <section class="chat-box">
             <div class="chathead">
                 <div class="flex items-center gap-2">
-                    <strong class="text-white" id="chathead-title">🤖 Trợ lý AI (Cloudflare Worker)</strong>
+                    <strong class="text-white" id="chathead-title">✨ Trợ lý AI DigitalGroup</strong>
                 </div>
-                <span class="model-badge" id="chathead-badge"><i class="fa-solid fa-cloud text-cyan-400 mr-1"></i> Worker Proxy</span>
+                <span class="model-badge" id="chathead-badge"><i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi <-> Đáp</span>
             </div>
 
-            <!-- MESSAGES CONTAINER -->
+            <!-- MESSAGES CONTAINER (chat view) -->
             <div class="messages" id="messages">
                 <div class="msg">
-                    <div class="avatar">🤖</div>
-                    <div class="bubble">Xin chào! Tôi là Trợ lý AI kết nối qua Cloudflare Worker của bạn. Tôi có thể giúp gì cho bạn hôm nay?
+                    <div class="avatar">✦</div>
+                    <div class="bubble">Xin chào! Tôi là trợ lý AI của <b>AI DigitalGroup</b>. Hôm nay tôi có thể hỗ trợ gì cho bạn?
                         <div class="suggestions">
-                            <span class="chip" onclick="window.sendSuggestion('Viết bài chuẩn SEO về AI')">Bài viết SEO</span>
-                            <span class="chip" onclick="window.sendSuggestion('Tạo kịch bản video TikTok viral')">Kịch bản TikTok</span>
-                            <span class="chip" onclick="window.sendSuggestion('Viết code Python tự động hóa')">Code Python</span>
+                            <span class="chip" onclick="window.sendSuggestion('Tạo website 3D bằng HTML/CSS')">Tạo website 3D</span>
+                            <span class="chip" onclick="window.sendSuggestion('Viết kịch bản video TikTok thu hút')">Viết kịch bản video</span>
+                            <span class="chip" onclick="window.sendSuggestion('Phân tích số liệu kế hoạch kinh doanh')">Phân tích kế hoạch</span>
+                            <span class="chip" onclick="window.sendSuggestion('Viết code Python tự động hóa')">Viết code Python</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- COMPOSER INPUT BOX -->
+            <!-- COMPOSER INPUT BOX (chat view) -->
             <div class="composer" id="composer">
                 <div class="input-wrap">
+                    <button class="tool-btn"><i class="fa-solid fa-paperclip"></i></button>
                     <input id="prompt" placeholder="Nhắn tin với Trợ lý AI..." />
+                    <button class="tool-btn"><i class="fa-solid fa-microphone"></i></button>
                     <button class="send-btn" id="send"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                 </div>
-                <div class="hint">Đã chuyển đổi sang Cloudflare Worker: falling-cell-9f22.dinhphu-skv.workers.dev</div>
+                <div class="hint">Tích hợp Google Gen AI SDK · Gemini 3.1 Pro Preview</div>
+            </div>
+
+            <!-- JPG CONVERTER TOOL PANEL -->
+            <div id="tool-jpg-panel">
+                <!-- Golden 3D star → WebP quick tool -->
+                <div class="star-widget" id="webpStarBtn" title="WebP Pro Optimizer" onclick="window.toggleWebpQuick()">
+                    <div class="star-3d star-gold"></div>
+                </div>
+                <div class="webp-quick-panel" id="webpQuickPanel">
+                    <div class="webp-quick-head">
+                        <h3>⚡ WebP Pro Optimizer</h3>
+                        <button type="button" class="webp-quick-close" onclick="window.toggleWebpQuick(false)" title="Đóng">✕</button>
+                    </div>
+                    <div class="webp-quick-body">
+                        <div class="webp-controls">
+                            <label><input type="radio" name="webpMode" value="lossy" checked onchange="window.webpSetMode('lossy')" /> Lossy</label>
+                            <label><input type="radio" name="webpMode" value="lossless" onchange="window.webpSetMode('lossless')" /> Lossless</label>
+                            <label id="webpQualityWrap">Chất lượng: <span id="webpQualityVal">85</span>%
+                                <input type="range" id="webpQuality" min="1" max="100" value="85" oninput="document.getElementById('webpQualityVal').textContent=this.value" />
+                            </label>
+                            <label><input type="checkbox" id="webpStripExif" checked /> Xóa EXIF</label>
+                        </div>
+                        <div class="webp-drop" id="webpDropZone">
+                            Kéo thả ảnh vào đây hoặc <b style="color:#4ade80">chọn file</b>
+                            <input type="file" id="webpFileInput" multiple accept="image/*" style="display:none" />
+                        </div>
+                        <div class="webp-actions">
+                            <span class="webp-saved" id="webpSavedInfo"></span>
+                            <button type="button" class="webp-btn-zip" id="webpZipBtn" style="display:none" onclick="window.webpDownloadZip()">📦 Tải ZIP</button>
+                            <button type="button" class="webp-btn-clear" id="webpClearBtn" style="display:none" onclick="window.webpClearAll()">Xóa tất cả</button>
+                        </div>
+                        <div class="webp-list" id="webpFileList"></div>
+                    </div>
+                </div>
+                <div class="jpg-tool-box">
+                    <h2>🖼 Chuyển ảnh → JPG (&lt;100KB + 5★)</h2>
+                    <div class="jpg-layout">
+                        <div class="jpg-left">
+                            <label>1. Dán URL ảnh</label>
+                            <input id="imgUrlInput" type="url" placeholder="https://..." autocomplete="off" />
+                            <div class="jpg-or">— hoặc —</div>
+                            <label>2. Chọn ảnh từ máy (khuyên dùng)</label>
+                            <input id="fileInput" type="file" accept="image/*" />
+                            <label>Tên file</label>
+                            <input id="filenameInput" type="text" placeholder="Ten-hinh-anh-dep" value="" />
+                            <label>Copyright</label>
+                            <input id="copyrightInput" type="text" value="https://genperfume.com/" />
+                            <label>Program name</label>
+                            <input id="programInput" type="text" value="GenPerfume: Authentic perfume shop" />
+                            <button class="jpg-go-btn" id="convertBtn" type="button">Chuyển đổi ngay</button>
+                            <div class="jpg-note">
+                                • Dùng Upload từ máy để chắc chắn nhất<br />
+                                • Nén &lt;100KB, cạnh dài ≥800px, Rating 5 sao (EXIF)
+                            </div>
+                        </div>
+                        <div class="jpg-right">
+                            <div class="jpg-status" id="statusMsg"></div>
+                            <div class="jpg-placeholder" id="imgPlaceholder">
+                                <div class="ph-icon">🖼</div>
+                                <div class="ph-title">Xem trước ảnh</div>
+                                <div class="ph-desc">Dán URL hoặc chọn ảnh bên trái, bấm <b>Chuyển đổi ngay</b> — kết quả sẽ hiện tại đây</div>
+                            </div>
+                            <div class="jpg-preview" id="previewArea">
+                                <div class="jpg-fileinfo" id="fileInfo"></div>
+                                <img id="previewImg" alt="preview" />
+                                <br />
+                                <a class="jpg-dl" href="#" id="downloadLink">⬇️ Tải ảnh JPG</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEXT CASE CONVERTER TOOL PANEL -->
+            <div id="tool-text-panel">
+                <!-- Red 3D star → Sug slug tool -->
+                <div class="star-widget" id="sugStarBtn" title="Slug / Sug nhanh" onclick="window.toggleSugTool()">
+                    <div class="star-3d star-red"></div>
+                </div>
+                <div class="sug-tool-card" id="sugToolCard">
+                    <textarea id="sugInputText" placeholder="Dán văn bản hoặc sug vào đây..."></textarea>
+                    <div class="sug-btn-grid">
+                        <button type="button" class="btn-add-sug" onclick="window.sugAdd()">Thêm slug (-)</button>
+                        <button type="button" class="btn-remove-sug" onclick="window.sugRemove()">Bỏ slug (-)</button>
+                        <button type="button" class="btn-sug-copy" onclick="window.sugCopy()">Sao chép</button>
+                        <button type="button" class="btn-sug-clear" onclick="window.sugClear()">Xóa</button>
+                    </div>
+                    <div class="sug-toast" id="sugToastMsg"></div>
+                </div>
+                <div class="kw-tool-box">
+                    <h2>Chuyển Đổi Tất Cả Các Dạng Chữ</h2>
+                    <p class="kw-sub">Nhập nội dung và nhấn nút để chuyển đổi chữ</p>
+
+                    <div class="kw-label-row">
+                        <label for="kwInput">Văn bản nguồn</label>
+                        <div class="kw-counter" id="kwStats">0 ký tự | 0 từ</div>
+                    </div>
+                    <textarea id="kwInput" placeholder="Nhập từ khóa hoặc đoạn văn tại đây..."></textarea>
+
+                    <div class="kw-opts">
+                        <span style="width:100%;font-size:12px;color:#94a3b8;margin-bottom:-4px">Ký tự nối cho SEO Slug:</span>
+                        <label>
+                            <input checked name="kwSep" type="radio" value="dash" /> Gạch ngang (-)
+                        </label>
+                        <label>
+                            <input name="kwSep" type="radio" value="underscore" /> Gạch dưới (_)
+                        </label>
+                    </div>
+
+                    <button class="kw-go" id="kwConvertBtn" type="button">✨ Chuyển Đổi Ngay</button>
+
+                    <div class="kw-card">
+                        <span class="kw-card-title">Dạng SEO Slug</span>
+                        <div class="kw-card-row">
+                            <span class="kw-card-text" id="kwSlug">---</span>
+                            <button class="kw-copy" data-kw-copy="kwSlug" type="button">Sao chép</button>
+                        </div>
+                    </div>
+                    <div class="kw-card">
+                        <span class="kw-card-title">Chữ Thường (Lowercase)</span>
+                        <div class="kw-card-row">
+                            <span class="kw-card-text" id="kwLower">---</span>
+                            <button class="kw-copy" data-kw-copy="kwLower" type="button">Sao chép</button>
+                        </div>
+                    </div>
+                    <div class="kw-card">
+                        <span class="kw-card-title">Chữ Hoa (Uppercase)</span>
+                        <div class="kw-card-row">
+                            <span class="kw-card-text" id="kwUpper">---</span>
+                            <button class="kw-copy" data-kw-copy="kwUpper" type="button">Sao chép</button>
+                        </div>
+                    </div>
+                    <div class="kw-card">
+                        <span class="kw-card-title">Viết Hoa Chữ Đầu (Capitalize)</span>
+                        <div class="kw-card-row">
+                            <span class="kw-card-text" id="kwCap">---</span>
+                            <button class="kw-copy" data-kw-copy="kwCap" type="button">Sao chép</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="kw-toast" id="kwToast">✨ Đã sao chép!</div>
+
+            <!-- GEOTAG TOOL PANEL -->
+            <div id="tool-geo-panel">
+                <div class="geo-tool-box">
+                    <h2>GEOTAG GOOGLE MAP - PRO MAX</h2>
+                    <p class="geo-sub">Định vị &amp; nhúng Metadata Exif cho ảnh</p>
+                    <div class="geo-container">
+                        <div class="geo-card">
+                            <h4>Thông tin Metadata</h4>
+                            <div class="geo-fg">
+                                <label>Hình ảnh</label>
+                                <div class="geo-upload" id="geoUploadZone">
+                                    <p id="geoUploadLabel" style="font-size:0.85rem;color:#94a3b8;margin:0">Nhấp để tải ảnh lên (có thể chọn nhiều)</p>
+                                    <input accept="image/*" id="geoImageInput" multiple="multiple" type="file" />
+                                </div>
+                                <div class="geo-preview" id="geoPreviewBox">
+                                    <div id="geoPreviewThumbs" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;width:100%;height:100%;overflow:auto;padding:4px;box-sizing:border-box;"></div>
+                                </div>
+                            </div>
+                            <div class="geo-fg">
+                                <label>Tiêu đề ảnh</label>
+                                <input id="geoTitle" placeholder="VD: Landmark 81" type="text" />
+                            </div>
+                            <div class="geo-fg">
+                                <label>Tác giả</label>
+                                <input id="geoAuthor" placeholder="VD: Nguyễn Văn A" type="text" />
+                            </div>
+                            <div class="geo-fg">
+                                <label>Đánh giá</label>
+                                <div class="geo-stars">
+                                    <input id="geoS5" name="geoRating" type="radio" value="5" /><label for="geoS5">★</label>
+                                    <input id="geoS4" name="geoRating" type="radio" value="4" /><label for="geoS4">★</label>
+                                    <input id="geoS3" name="geoRating" type="radio" value="3" checked="checked" /><label for="geoS3">★</label>
+                                    <input id="geoS2" name="geoRating" type="radio" value="2" /><label for="geoS2">★</label>
+                                    <input id="geoS1" name="geoRating" type="radio" value="1" /><label for="geoS1">★</label>
+                                </div>
+                            </div>
+                            <div class="geo-fg">
+                                <label>Mô tả / Copyright</label>
+                                <textarea id="geoDesc" placeholder="Mô tả, tags..." rows="2"></textarea>
+                            </div>
+                            <div class="geo-fg">
+                                <label>Thiết bị</label>
+                                <input id="geoDevice" placeholder="iPhone 15 Pro" type="text" />
+                            </div>
+                        </div>
+                        <div class="geo-card">
+                            <h4>Bản đồ GeoLocation</h4>
+                            <div class="geo-fg">
+                                <label>URL Google Maps</label>
+                                <div class="geo-url-row">
+                                    <input id="geoMapsUrl" placeholder="Dán link Google Maps đầy đủ..." type="text" />
+                                    <button class="geo-url-btn" id="geoParseUrlBtn" type="button">Lấy tọa độ</button>
+                                </div>
+                            </div>
+                            <div class="geo-fg">
+                                <div id="geoMap"></div>
+                            </div>
+                            <div class="geo-fg">
+                                <label>Vĩ độ (Lat)</label>
+                                <input id="geoLat" placeholder="16.047079" step="any" type="number" />
+                            </div>
+                            <div class="geo-fg">
+                                <label>Kinh độ (Lng)</label>
+                                <input id="geoLng" placeholder="108.206230" step="any" type="number" />
+                            </div>
+                            <div class="geo-fg">
+                                <label>Độ cao (m)</label>
+                                <input id="geoAlt" type="number" value="10" />
+                            </div>
+                            <button class="geo-submit" id="geoProcessBtn" type="button">GHI EXIF &amp; TẢI XUỐNG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIND & REPLACE TOOL PANEL -->
+            <div id="tool-replace-panel">
+                <div class="br-tool-box" id="brApp">
+                    <div class="br-title">Tìm và Thay</div>
+                    <div class="br-sub">Chức năng tìm kiếm, thay thế, thêm/xóa dòng, copy và xóa văn bản</div>
+                    <div class="br-toolbar">
+                        <div class="br-opts">
+                            <label><input id="brMatchCase" type="checkbox" /> Phân biệt HOA/thường</label>
+                            <label><input id="brWholeWord" type="checkbox" /> Đúng toàn bộ từ</label>
+                            <label><input id="brUseRegex" type="checkbox" /> Dùng Regex</label>
+                        </div>
+                        <div class="br-actions">
+                            <button class="br-btn br-btn-add" id="brAddRule" type="button">+ Thêm cặp quy tắc</button>
+                        </div>
+                        <div class="br-rules" id="brRulesList">
+                            <div class="br-rule">
+                                <div class="br-field">
+                                    <label>Tìm</label>
+                                    <textarea class="br-find" placeholder="từ1, từ2, từ3" rows="2"></textarea>
+                                </div>
+                                <div class="br-field">
+                                    <label>Thay bằng (trống = xóa)</label>
+                                    <input class="br-replace" placeholder="Để trống nếu muốn xóa" type="text" />
+                                </div>
+                                <button class="br-del" id="brDel0" type="button">X</button>
+                            </div>
+                        </div>
+                        <div class="br-hint" style="margin-top:10px">
+                            Có thể nhập nhiều từ tìm (cách nhau bởi <strong>dấu phẩy</strong>, <strong>xuống dòng</strong> hoặc <strong>|</strong>). Để trống ô thay = xóa khớp.
+                        </div>
+                    </div>
+                    <div class="br-ws-head">
+                        <span class="br-ws-label">Dán văn bản vào đây</span>
+                        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                            <span class="br-badge" id="brStats">Lượt: 0</span>
+                            <button class="br-btn br-btn-run" id="brExecute" type="button">Thực hiện thay thế</button>
+                            <button class="br-btn br-btn-copy" id="brCopy" type="button">Sao chép</button>
+                            <button class="br-btn br-btn-cleartext" id="brClearAll" type="button">Xóa tất cả</button>
+                        </div>
+                    </div>
+                    <textarea id="brMainText" placeholder="Dán văn bản..."></textarea>
+                    <div class="br-extra">
+                        Công cụ HTML nhanh:
+                        <button id="pBtn" type="button">Mở &lt;p&gt;</button>
+                        <button id="brCopyWidth" type="button">Width</button>
+                        <button id="brCopyHeight" type="button">Height</button>
+                        <span id="toastNotice" style="color:#4ade80;font-weight:bold;display:none;margin-left:6px">✓ Đã copy!</span>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 </div>
 
-<!-- JAVASCRIPT LOGIC - KẾT NỐI QUA CLOUDFLARE WORKER PROXY -->
-<script>
-    // URL Cloudflare Worker của bạn
-    const WORKER_URL = 'https://falling-cell-9f22.dinhphu-skv.workers.dev';
+<!-- JAVASCRIPT LOGIC - DÙNG MODEL CHUẨN MỚI NHẤT -->
+<script type="module">
+    const PROXY_URL = 'https://cool-moon-97d2.dinhphu-skv.workers.dev';
 
     const messages = document.getElementById('messages');
     const input = document.getElementById('prompt');
     const send = document.getElementById('send');
-    
-    // Lịch sử trò chuyện theo chuẩn OpenAI API
-    let chatHistory = [
-        { role: 'system', content: 'Bạn là một trợ lý AI hữu ích, thông minh và thân thiện.' }
-    ];
+    let chatHistory = [];
 
     function addMessage(text, who = 'user') {
         const m = document.createElement('div');
         m.className = 'msg ' + (who === 'user' ? 'user' : '');
-        m.innerHTML = `<div class="avatar">${who === 'user' ? 'Bạn' : '🤖'}</div><div class="bubble"></div>`;
+        m.innerHTML = `<div class="avatar">${who === 'user' ? 'Bạn' : '✦'}</div><div class="bubble"></div>`;
         m.querySelector('.bubble').textContent = text;
         messages.appendChild(m);
         messages.scrollTop = messages.scrollHeight;
         return m;
     }
 
-    async function callWorkerAPI(messagesPayload) {
-        const response = await fetch(WORKER_URL, {
+    async function callGemini(contents) {
+        const response = await fetch(PROXY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: messagesPayload,
-                temperature: 0.7
+                contents: contents
             })
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error?.message || data.message || 'Lỗi kết nối tới Worker API');
+            throw new Error(data.error?.message || data.error || 'Lỗi gọi API');
         }
 
-        // Tự động phân tích trường phản hồi trả về từ Worker (kể cả dạng chuẩn OpenAI hoặc dạng tùy chỉnh)
-        const text = data?.choices?.[0]?.message?.content || data?.reply || data?.text || data?.message;
+        // Lấy nội dung trả về từ Gemini
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!text) {
-            throw new Error('Không nhận được phản hồi hợp lệ từ Worker');
+            throw new Error('Không nhận được nội dung từ AI');
         }
         return text;
     }
@@ -446,19 +1774,19 @@
         addMessage(v, 'user');
         if (!userText) input.value = '';
 
-        chatHistory.push({ role: 'user', content: v });
+        chatHistory.push({ role: 'user', parts: [{ text: v }] });
 
-        const loadingMsg = addMessage('AI đang suy nghĩ...', 'ai');
+        const loadingMsg = addMessage('Đang xử lý...', 'ai');
 
         try {
-            const aiReply = await callWorkerAPI(chatHistory);
+            const aiReply = await callGemini(chatHistory);
 
             loadingMsg.querySelector('.bubble').textContent = aiReply;
-            chatHistory.push({ role: 'assistant', content: aiReply });
+            chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
         } catch (error) {
-            console.error('Worker API Error:', error);
-            loadingMsg.querySelector('.bubble').textContent = `⚠️ ${error.message}`;
-            chatHistory.pop(); // Xóa tin nhắn thất bại khỏi lịch sử
+            console.error('Proxy Error:', error);
+            loadingMsg.querySelector('.bubble').textContent = `Lỗi hệ thống: ${error.message || 'Chưa thể phản hồi lúc này.'}`;
+            chatHistory.pop();
         }
     }
 
@@ -470,14 +1798,1352 @@
     input.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
 
     document.getElementById('newChat').onclick = () => {
-        chatHistory = [{ role: 'system', content: 'Bạn là một trợ lý AI hữu ích, thông minh và thân thiện.' }];
-        messages.innerHTML = '<div class="msg"><div class="avatar">🤖</div><div class="bubble">Cuộc trò chuyện mới đã sẵn sàng!</div></div>';
+        chatHistory = [];
+        messages.innerHTML = '<div class="msg"><div class="avatar">✦</div><div class="bubble">Cuộc trò chuyện mới đã sẵn sàng. Bạn muốn bắt đầu với điều gì?</div></div>';
         input.focus();
     };
+</script>
 
-    window.showChatView = function() {
-        document.querySelectorAll('#tool-jpg-panel, #tool-text-panel, #tool-geo-panel, #tool-replace-panel').forEach(p => p.classList.remove('active'));
+<script>
+    /* HIỆU ỨNG GIAO DIỆN PRO MAX 3D & CANVAS PARTICLES */
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('menu-particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            const header = canvas.parentElement;
+            canvas.width = header.offsetWidth;
+            canvas.height = header.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(168, 85, 247, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 30; i++) particles.push(new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        const navContainer = document.getElementById('promax-nav-container');
+        const spotlight = document.getElementById('nav-spotlight');
+
+        navContainer.addEventListener('mousemove', (e) => {
+            const rect = navContainer.getBoundingClientRect();
+            spotlight.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            spotlight.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        });
+
+        const magneticWraps = document.querySelectorAll('.magnetic-wrap');
+        magneticWraps.forEach(wrap => {
+            const card = wrap.querySelector('.menu-item-card');
+            const glowStart = wrap.getAttribute('data-glow-start') || 'rgba(168, 85, 247, 0.5)';
+            const glowEnd = wrap.getAttribute('data-glow-end') || 'rgba(236, 72, 153, 0.5)';
+            const glowAura = wrap.getAttribute('data-glow-aura') || 'rgba(168, 85, 247, 0.5)';
+            const laserColor = wrap.getAttribute('data-laser') || '#a855f7';
+
+            wrap.style.setProperty('--glow-start', glowStart);
+            wrap.style.setProperty('--glow-end', glowEnd);
+            wrap.style.setProperty('--glow-aura', glowAura);
+            wrap.style.setProperty('--laser-color', laserColor);
+
+            let mouseX = 0, mouseY = 0, currentX = 0, currentY = 0, isHovered = false;
+
+            wrap.addEventListener('mousemove', (e) => {
+                isHovered = true;
+                const rect = wrap.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                mouseX = (e.clientX - centerX) * 0.35;
+                mouseY = (e.clientY - centerY) * 0.35;
+
+                const rotateX = ((e.clientY - centerY) / (rect.height / 2)) * -18;
+                const rotateY = ((e.clientX - centerX) / (rect.width / 2)) * 18;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(12px)`;
+            });
+
+            wrap.addEventListener('mouseleave', () => {
+                isHovered = false; mouseX = 0; mouseY = 0;
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+                wrap.style.transform = `translate3d(0px, 0px, 0px)`;
+            });
+
+            function renderMagnetic() {
+                if (isHovered) {
+                    currentX += (mouseX - currentX) * 0.15;
+                    currentY += (mouseY - currentY) * 0.15;
+                    wrap.style.transform = `translate3d(${currentX}px, ${currentY}px, 0px)`;
+                } else {
+                    currentX += (0 - currentX) * 0.15;
+                    currentY += (0 - currentY) * 0.15;
+                    wrap.style.transform = `translate3d(${currentX}px, ${currentY}px, 0px)`;
+                }
+                requestAnimationFrame(renderMagnetic);
+            }
+            renderMagnetic();
+        });
+
+        window.triggerProMaxAction = function(e) {
+            const btn = e.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+            const radius = diameter / 2;
+            const rect = btn.getBoundingClientRect();
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${e.clientX - rect.left - radius}px`;
+            circle.style.top = `${e.clientY - rect.top - radius}px`;
+            circle.classList.add('ripple-effect');
+
+            const ripple = btn.getElementsByClassName('ripple-effect')[0];
+            if (ripple) ripple.remove();
+
+            btn.appendChild(circle);
+        };
+
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileDropdown = document.getElementById('mobile-dropdown');
+        mobileToggle.addEventListener('click', () => {
+            mobileDropdown.classList.toggle('hidden');
+            mobileDropdown.classList.toggle('flex');
+        });
+    });
+</script>
+
+<script>
+/* ===== VIEW TOGGLE: Chat <-> Tools ===== */
+function closeMobileMenu() {
+    var md = document.getElementById('mobile-dropdown');
+    if (md && !md.classList.contains('hidden')) {
+        md.classList.add('hidden');
+        md.classList.remove('flex');
+    }
+}
+
+function hideAllTools() {
+    var ids = ['tool-jpg-panel', 'tool-text-panel', 'tool-geo-panel', 'tool-replace-panel'];
+    ids.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+    });
+    var webp = document.getElementById('webpQuickPanel');
+    if (webp) webp.classList.remove('show');
+    var sug = document.getElementById('sugToolCard');
+    if (sug) sug.classList.remove('show');
+}
+
+function showToolPanel(panelId, titleText, badgeHtml) {
+    var messages = document.getElementById('messages');
+    var composer = document.getElementById('composer');
+    var title = document.getElementById('chathead-title');
+    var badge = document.getElementById('chathead-badge');
+    if (messages) messages.classList.add('chat-view-hidden');
+    if (composer) composer.classList.add('chat-view-hidden');
+    hideAllTools();
+    var panel = document.getElementById(panelId);
+    if (panel) panel.classList.add('active');
+    if (title) title.textContent = titleText;
+    if (badge) badge.innerHTML = badgeHtml;
+    closeMobileMenu();
+}
+
+window.showChatView = function () {
+    var messages = document.getElementById('messages');
+    var composer = document.getElementById('composer');
+    var title = document.getElementById('chathead-title');
+    var badge = document.getElementById('chathead-badge');
+    if (messages) messages.classList.remove('chat-view-hidden');
+    if (composer) composer.classList.remove('chat-view-hidden');
+    hideAllTools();
+    if (title) title.textContent = '✨ Trợ lý AI DigitalGroup';
+    if (badge) badge.innerHTML = '<i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi <-> Đáp';
+    closeMobileMenu();
+};
+
+window.showJpgTool = function () {
+    showToolPanel('tool-jpg-panel', '🖼 Chuyển ảnh → JPG',
+        '<i class="fa-solid fa-image text-red-400 mr-1"></i> Công cụ nén ảnh');
+};
+
+window.showTextTool = function () {
+    showToolPanel('tool-text-panel', '🔤 Chuyển dạng chữ',
+        '<i class="fa-solid fa-font text-purple-400 mr-1"></i> SEO Slug & Case');
+};
+
+window.showGeoTool = function () {
+    showToolPanel('tool-geo-panel', '📍 Geotag Maps',
+        '<i class="fa-solid fa-map-location-dot text-sky-400 mr-1"></i> GPS & EXIF');
+    // invalidate leaflet map size after panel becomes visible
+    setTimeout(function () {
+        if (typeof window._geoInitMap === 'function') window._geoInitMap();
+    }, 150);
+};
+
+window.showReplaceTool = function () {
+    showToolPanel('tool-replace-panel', '🔍 Tìm & Thay thế',
+        '<i class="fa-solid fa-find-replace text-violet-400 mr-1"></i> Find / Replace');
+};
+
+/* ===== JPG CONVERTER LOGIC (embedded) ===== */
+(function () {
+  function imgStatus(msg, type) {
+    var el = document.getElementById('statusMsg');
+    if (!el) return;
+    el.className = 'jpg-status ' + type;
+    el.innerHTML = msg;
+    el.style.display = 'block';
+  }
+
+  function slugify(str) {
+    if (!str) return '';
+    str = String(str).toLowerCase().trim();
+    try {
+      str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    } catch (e) {}
+    return str
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/[\s-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function forceDownload(blob, name) {
+    var u = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = u;
+    a.download = name;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(u);
+    }, 300);
+  }
+
+  function loadFile(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function (e) {
+        var img = new Image();
+        img.onload = function () { resolve(img); };
+        img.onerror = function () { reject(new Error('Không đọc được ảnh')); };
+        img.src = e.target.result;
+      };
+      r.onerror = function () { reject(new Error('Lỗi đọc file')); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  function canvasBlob(img, w, h, q) {
+    return new Promise(function (resolve) {
+      var c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      c.toBlob(function (b) { resolve(b); }, 'image/jpeg', q);
+    });
+  }
+
+  function injectExif(blob, copyright, program) {
+    if (typeof piexif === 'undefined') return Promise.resolve(blob);
+    return new Promise(function (resolve) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var binary = reader.result;
+          var zeroth = {};
+          zeroth[piexif.ImageIFD.Rating] = 5;
+          zeroth[piexif.ImageIFD.Software] = program;
+          zeroth[piexif.ImageIFD.Copyright] = copyright;
+          zeroth[piexif.ImageIFD.DateTime] = new Date()
+            .toISOString()
+            .replace('T', ' ')
+            .substring(0, 19);
+          var bytes = piexif.dump({ '0th': zeroth, Exif: {}, GPS: {} });
+          var out = piexif.insert(bytes, binary);
+          var arr = new Uint8Array(out.length);
+          for (var i = 0; i < out.length; i++) arr[i] = out.charCodeAt(i);
+          resolve(new Blob([arr], { type: 'image/jpeg' }));
+        } catch (e) {
+          resolve(blob);
+        }
+      };
+      reader.onerror = function () { resolve(blob); };
+      reader.readAsBinaryString(blob);
+    });
+  }
+
+  function processImg(img, copyright, program) {
+    var MAX = 100 * 1024;
+    var MIN = 801;
+    var w = img.width;
+    var h = img.height;
+    var long = Math.max(w, h);
+    if (long < MIN) {
+      var sc = MIN / long;
+      w = Math.round(w * sc);
+      h = Math.round(h * sc);
+    }
+    if (Math.max(w, h) > 1600) {
+      var sc2 = 1600 / Math.max(w, h);
+      w = Math.round(w * sc2);
+      h = Math.round(h * sc2);
+    }
+    var q = 0.85;
+    var fw = w;
+    var fh = h;
+    var blob = null;
+    var step = 0;
+
+    function loop() {
+      return canvasBlob(img, fw, fh, q).then(function (b) {
+        blob = b;
+        if (blob.size <= MAX || step >= 18) return blob;
+        step++;
+        q = Math.max(0.15, q - 0.07);
+        if (blob.size > MAX && Math.max(fw, fh) > MIN + 30) {
+          fw = Math.round(fw * 0.88);
+          fh = Math.round(fh * 0.88);
+          if (Math.max(fw, fh) < MIN) {
+            var f = MIN / Math.max(fw, fh);
+            fw = Math.round(fw * f);
+            fh = Math.round(fh * f);
+          }
+          q = 0.7;
+        }
+        return loop();
+      });
+    }
+
+    return loop()
+      .then(function () {
+        if (blob.size > MAX) {
+          fw = Math.round(fw * 0.9);
+          fh = Math.round(fh * 0.9);
+          return canvasBlob(img, fw, fh, 0.18).then(function (b) { blob = b; });
+        }
+      })
+      .then(function () { return injectExif(blob, copyright, program); })
+      .then(function (finalBlob) {
+        return { blob: finalBlob, width: fw, height: fh };
+      });
+  }
+
+  function doConvert() {
+    var url = (document.getElementById('imgUrlInput').value || '').trim();
+    var fileInput = document.getElementById('fileInput');
+    var rawName = (document.getElementById('filenameInput').value || '').trim();
+    var copyright =
+      (document.getElementById('copyrightInput').value || '').trim() ||
+      'genperfume.com';
+    var program =
+      (document.getElementById('programInput').value || '').trim() ||
+      'GenPerfume';
+    var btn = document.getElementById('convertBtn');
+    var previewArea = document.getElementById('previewArea');
+    var previewImg = document.getElementById('previewImg');
+    var downloadLink = document.getElementById('downloadLink');
+    var fileInfo = document.getElementById('fileInfo');
+
+    if (!url && !(fileInput.files && fileInput.files[0])) {
+      imgStatus('Vui lòng chọn file ảnh hoặc dán URL!', 'err');
+      return;
+    }
+
+    previewArea.style.display = 'none';
+    var ph0 = document.getElementById('imgPlaceholder');
+    if (ph0) ph0.style.display = 'flex';
+    btn.disabled = true;
+    imgStatus('Đang xử lý...', 'info');
+
+    var p;
+    if (fileInput.files && fileInput.files[0]) {
+      if (!rawName) {
+        rawName = fileInput.files[0].name.replace(/\.[^/.]+$/, '');
+        document.getElementById('filenameInput').value = rawName;
+      }
+      p = loadFile(fileInput.files[0]);
+    } else {
+      p = fetch(
+        'https://images.weserv.nl/?url=' + encodeURIComponent(url)
+      )
+        .then(function (r) {
+          if (!r.ok) throw new Error('Không tải được URL');
+          return r.blob();
+        })
+        .then(function (blob) {
+          return new Promise(function (resolve, reject) {
+            var im = new Image();
+            im.onload = function () { resolve(im); };
+            im.onerror = function () { reject(new Error('Ảnh lỗi')); };
+            im.src = URL.createObjectURL(blob);
+          });
+        });
+    }
+
+    p.then(function (img) {
+      imgStatus('Đang nén + ghi EXIF...', 'info');
+      return processImg(img, copyright, program);
+    })
+      .then(function (result) {
+        var name = slugify(rawName) || 'anh-jpg-' + Date.now();
+        name += '.jpg';
+        var obj = URL.createObjectURL(result.blob);
+        previewImg.src = obj;
+        downloadLink.onclick = function (e) {
+          e.preventDefault();
+          forceDownload(result.blob, name);
+          var fi = document.getElementById('fileInput');
+          if (fi) fi.value = '';
+        };
+        downloadLink.textContent = '⬇️ Tải ' + name;
+        fileInfo.innerHTML =
+          'File: <b>' +
+          name +
+          '</b><br/>Size: <b>' +
+          result.width +
+          '×' +
+          result.height +
+          '</b><br/>Dung lượng: <b>' +
+          (result.blob.size / 1024).toFixed(1) +
+          ' KB</b>';
+        previewArea.style.display = 'block';
+        var ph = document.getElementById('imgPlaceholder');
+        if (ph) ph.style.display = 'none';
+        imgStatus('✅ Thành công!', 'ok');
+      })
+      .catch(function (err) {
+        console.error(err);
+        imgStatus('Lỗi: ' + (err.message || err), 'err');
+      })
+      .then(function () {
+        btn.disabled = false;
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('convertBtn');
+    if (btn) btn.addEventListener('click', doConvert);
+  });
+})();
+</script>
+
+
+<script>
+/* ===== TEXT CASE CONVERTER LOGIC ===== */
+(function () {
+  var kwToastTimer = null;
+
+  function kwUpdateStats() {
+    var input = document.getElementById("kwInput");
+    var stats = document.getElementById("kwStats");
+    if (!input || !stats) return;
+    var v = input.value || "";
+    var words = v.trim() ? v.trim().split(/\s+/).length : 0;
+    stats.textContent = v.length + " ký tự | " + words + " từ";
+  }
+
+  function kwConvert() {
+    var inputEl = document.getElementById("kwInput");
+    if (!inputEl) return;
+    var input = inputEl.value || "";
+    var sepEl = document.querySelector('input[name="kwSep"]:checked');
+    var separator = sepEl && sepEl.value === "underscore" ? "_" : "-";
+    var set = function (id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val;
     };
+    if (!input.trim()) {
+      set("kwLower", "---");
+      set("kwUpper", "---");
+      set("kwCap", "---");
+      set("kwSlug", "---");
+      return;
+    }
+    set("kwLower", input.toLowerCase());
+    set("kwUpper", input.toUpperCase());
+    var cap = input.toLowerCase().replace(/(?:^|\s)\S/g, function (c) {
+      return c.toUpperCase();
+    });
+    set("kwCap", cap);
+    var slug = input.toLowerCase();
+    try {
+      slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    } catch (e) {}
+    slug = slug
+      .replace(/[đĐ]/g, "d")
+      .replace(/[^0-9a-z\s-]/g, "")
+      .replace(/\s+/g, separator)
+      .replace(new RegExp("\\" + separator + "+", "g"), separator)
+      .replace(new RegExp("^\\" + separator + "+|\\" + separator + "+$", "g"), "");
+    set("kwSlug", slug);
+  }
+
+  function kwCopy(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var text = el.textContent;
+    if (!text || text === "---") return;
+    function ok() {
+      var toast = document.getElementById("kwToast");
+      if (!toast) return;
+      toast.classList.add("show");
+      clearTimeout(kwToastTimer);
+      kwToastTimer = setTimeout(function () {
+        toast.classList.remove("show");
+      }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok).catch(function () {
+        fallbackCopy(text, ok);
+      });
+    } else {
+      fallbackCopy(text, ok);
+    }
+  }
+
+  function fallbackCopy(text, ok) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      ok();
+    } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var btn = document.getElementById("kwConvertBtn");
+    var input = document.getElementById("kwInput");
+    if (btn) btn.addEventListener("click", kwConvert);
+    if (input) {
+      input.addEventListener("input", kwUpdateStats);
+      input.addEventListener("keydown", function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          e.preventDefault();
+          kwConvert();
+        }
+      });
+    }
+    document.querySelectorAll("[data-kw-copy]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        kwCopy(b.getAttribute("data-kw-copy"));
+      });
+    });
+  });
+})();
+</script>
+
+
+<script>
+/* ===== GEOTAG LOGIC ===== */
+(function () {
+  var geoMap = null, geoMarker = null, geoOriginalImgs = [], geoMapReady = false;
+
+  function geoInitMap() {
+    if (typeof L === "undefined") {
+      console.log("Leaflet chua load");
+      return;
+    }
+    var mapEl = document.getElementById("geoMap");
+    if (!mapEl) return;
+    if (geoMapReady && geoMap) {
+      setTimeout(function () { try { geoMap.invalidateSize(); } catch(e){} }, 200);
+      return;
+    }
+    var lat0 = 16.047079, lng0 = 108.206230;
+    try {
+      geoMap = L.map("geoMap").setView([lat0, lng0], 13);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "OpenStreetMap"
+      }).addTo(geoMap);
+      geoMarker = L.marker([lat0, lng0], { draggable: true }).addTo(geoMap);
+      geoMarker.on("dragend", function (e) {
+        var c = e.target.getLatLng();
+        geoUpdateCoords(c.lat, c.lng);
+      });
+      geoMap.on("click", function (e) {
+        geoMarker.setLatLng(e.latlng);
+        geoUpdateCoords(e.latlng.lat, e.latlng.lng);
+      });
+      geoMapReady = true;
+      var la = document.getElementById("geoLat");
+      var ln = document.getElementById("geoLng");
+      if (la) la.value = lat0.toFixed(6);
+      if (ln) ln.value = lng0.toFixed(6);
+      setTimeout(function () { try { geoMap.invalidateSize(); } catch(e){} }, 300);
+    } catch (err) {
+      console.log("geo map error", err);
+    }
+  }
+  window._geoInitMap = geoInitMap;
+
+  function geoUpdateCoords(lat, lng) {
+    var a = document.getElementById("geoLat");
+    var b = document.getElementById("geoLng");
+    if (a) a.value = lat.toFixed(6);
+    if (b) b.value = lng.toFixed(6);
+  }
+
+  function geoSetLocation(lat, lng) {
+    geoUpdateCoords(lat, lng);
+    if (!geoMap || !geoMarker) return;
+    try {
+      var ll = L.latLng(lat, lng);
+      geoMap.setView(ll, 15);
+      geoMarker.setLatLng(ll);
+    } catch (e) {}
+  }
+
+  function geoExtractLatLng(url) {
+    if (!url) return null;
+    url = String(url).trim();
+    try { url = decodeURIComponent(url.replace(/\+/g, " ")); } catch (e) {
+      url = url.replace(/%2[Cc]/g, ",").replace(/\+/g, " ");
+    }
+    url = url.replace(/&amp;/g, "&");
+    function ok(lat, lng) {
+      lat = parseFloat(lat); lng = parseFloat(lng);
+      if (isNaN(lat) || isNaN(lng)) return null;
+      if (lat < -90 || lat > 90) return null;
+      if (lng < -180 || lng > 180) return null;
+      return [lat, lng];
+    }
+    var m, r;
+    m = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (m && (r = ok(m[1], m[2]))) return r;
+    m = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (m && (r = ok(m[1], m[2]))) return r;
+    m = url.match(/(?:[?&#]|^)(?:q|query|ll|center|sll|destination|cbll)=(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)/i);
+    if (m && (r = ok(m[1], m[2]))) return r;
+    m = url.match(/[?&]q=loc:(-?\d+\.\d+)[+\s,]+(-?\d+\.\d+)/i);
+    if (m && (r = ok(m[1], m[2]))) return r;
+    m = url.match(/\/(?:search|place)\/(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)/);
+    if (m && (r = ok(m[1], m[2]))) return r;
+    m = url.match(/^(-?\d+\.\d+)[,\s]+(-?\d+\.\d+)$/);
+    if (m && (r = ok(m[1], m[2]))) return r;
+    var re = /(-?\d+\.\d+)\s*[, ]\s*(-?\d+\.\d+)/g;
+    var last = null;
+    while ((m = re.exec(url)) !== null) {
+      r = ok(m[1], m[2]);
+      if (r) last = r;
+    }
+    if (last) return last;
+    var latM = url.match(/!3d(-?\d+\.\d+)/);
+    var lngM = url.match(/!4d(-?\d+\.\d+)/);
+    if (latM && lngM && (r = ok(latM[1], lngM[1]))) return r;
+    return null;
+  }
+
+  function geoParseMapsUrl(fromButton) {
+    var el = document.getElementById("geoMapsUrl");
+    if (!el) return;
+    var url = (el.value || "").trim();
+    if (!url) {
+      if (fromButton) alert("Vui lòng dán link Google Maps hoặc tọa độ trước!");
+      return;
+    }
+    var pair = geoExtractLatLng(url);
+    if (pair) {
+      geoSetLocation(pair[0], pair[1]);
+      try { geoInitMap(); } catch (e0) {}
+      if (geoMap && geoMarker) {
+        try {
+          var ll = L.latLng(pair[0], pair[1]);
+          geoMap.setView(ll, 15);
+          geoMarker.setLatLng(ll);
+        } catch (e1) {}
+      }
+      if (fromButton) {
+        var btn = document.getElementById("geoParseUrlBtn");
+        if (btn) {
+          var oldTxt = btn.textContent;
+          btn.textContent = "Đã lấy!";
+          btn.style.background = "#16a34a";
+          setTimeout(function () {
+            btn.textContent = oldTxt || "Lấy tọa độ";
+            btn.style.background = "";
+          }, 1500);
+        }
+      }
+      return;
+    }
+    if (!fromButton) return;
+    var isShort = /maps\.app\.goo\.gl|goo\.gl\/maps/i.test(url);
+    var isPlaceNoCoord = /google\.[^/]+\/maps\/place\//i.test(url) && !/@\d|!3d\d/.test(url);
+    var hasHexId = /0x[0-9a-f]+:0x[0-9a-f]+/i.test(url);
+    if (isShort) {
+      alert("Link rút gọn không chứa tọa độ.\n\nCách lấy đúng:\n1. Mở link đó trên trình duyệt\n2. Đợi bản đồ load xong\n3. Copy URL trên thanh địa chỉ (sẽ có dạng .../@10.79,106.72,...)\n4. Dán lại vào đây và bấm «Lấy tọa độ»");
+      return;
+    }
+    if (isPlaceNoCoord || hasHexId) {
+      alert("Link địa điểm này không nhúng sẵn vĩ độ/kinh độ.\n\nMở link → đợi pin → copy URL có @lat,lng → dán lại.\nHoặc dán thẳng: 10.795118, 106.721837");
+      return;
+    }
+    alert("Không đọc được tọa độ.\nHãy dán URL có @10.79,106.72 hoặc !3d...!4d...\nHoặc 2 số: 10.795118, 106.721837");
+  }
+
+  function geoPreviewImages(files) {
+    if (!files || !files.length) return;
+    geoOriginalImgs = [];
+    var box = document.getElementById("geoPreviewBox");
+    var thumbs = document.getElementById("geoPreviewThumbs");
+    if (thumbs) thumbs.innerHTML = "";
+    if (box) box.style.display = "flex";
+    var label = document.getElementById("geoUploadLabel");
+    if (label) label.textContent = "Đã chọn " + files.length + " ảnh (nhấp để chọn lại)";
+    var total = files.length;
+    var loaded = 0;
+    for (var i = 0; i < files.length; i++) {
+      (function (file, idx) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var img = new Image();
+          img.onload = function () {
+            geoOriginalImgs[idx] = img;
+            loaded++;
+            if (thumbs) {
+              var t = document.createElement("img");
+              t.className = "geo-thumb";
+              t.src = e.target.result;
+              t.alt = "preview " + (idx + 1);
+              thumbs.appendChild(t);
+            }
+            if (loaded === total && thumbs) {
+              var cnt = document.createElement("div");
+              cnt.className = "geo-count";
+              cnt.textContent = total + " ảnh đã chọn";
+              thumbs.appendChild(cnt);
+            }
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      })(files[i], i);
+    }
+  }
+
+  function geoDegRational(deg) {
+    var abs = Math.abs(deg);
+    var d = Math.floor(abs);
+    var mNot = (abs - d) * 60;
+    var m = Math.floor(mNot);
+    var s = Math.floor((mNot - m) * 60 * 100);
+    return [[d, 1], [m, 1], [s, 100]];
+  }
+  function geoEncodeUnicode(str) {
+    return unescape(encodeURIComponent(str));
+  }
+  function geoJpegBase64(imgObj) {
+    var canvas = document.createElement("canvas");
+    canvas.width = imgObj.width;
+    canvas.height = imgObj.height;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(imgObj, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.92);
+  }
+  function geoSlugFromTitle(title) {
+    var fileName = "";
+    if (title && title.trim()) {
+      fileName = title.toLowerCase().trim();
+      try { fileName = fileName.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch (e1) {}
+      fileName = fileName.replace(/đ/g, "d").replace(/Đ/g, "d");
+      fileName = fileName.replace(/[^a-z0-9\s-]/g, "");
+      fileName = fileName.replace(/[\s-]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    if (!fileName) fileName = "geotagged-" + Date.now();
+    return fileName;
+  }
+
+  function geoProcess() {
+    try {
+      if (typeof piexif === "undefined") {
+        alert("Thư viện EXIF chưa tải xong. Đợi vài giây rồi thử lại.");
+        return;
+      }
+      var validImgs = [];
+      for (var i = 0; i < geoOriginalImgs.length; i++) {
+        if (geoOriginalImgs[i]) validImgs.push(geoOriginalImgs[i]);
+      }
+      if (!validImgs.length) {
+        alert("Vui lòng chọn ít nhất một ảnh!");
+        return;
+      }
+      var lat = parseFloat(document.getElementById("geoLat").value);
+      var lng = parseFloat(document.getElementById("geoLng").value);
+      var alt = parseFloat(document.getElementById("geoAlt").value) || 0;
+      if (isNaN(lat) || isNaN(lng)) {
+        alert("Vui lòng nhập tọa độ hoặc dán URL Google Maps!");
+        return;
+      }
+      var title = document.getElementById("geoTitle").value;
+      var author = document.getElementById("geoAuthor").value;
+      var description = document.getElementById("geoDesc").value;
+      var device = document.getElementById("geoDevice").value;
+      var ratingEl = document.querySelector('input[name="geoRating"]:checked');
+      var rating = ratingEl ? ratingEl.value : 0;
+
+      var exifObj = { "0th": {}, "Exif": {}, "GPS": {} };
+      if (title) exifObj["0th"][piexif.ImageIFD.ImageDescription] = geoEncodeUnicode(title);
+      if (author) exifObj["0th"][piexif.ImageIFD.Artist] = geoEncodeUnicode(author);
+      if (device) exifObj["0th"][piexif.ImageIFD.Model] = geoEncodeUnicode(device);
+      if (description) exifObj["0th"][piexif.ImageIFD.Copyright] = geoEncodeUnicode(description);
+      if (rating > 0) exifObj["0th"][piexif.ImageIFD.Rating] = parseInt(rating, 10);
+
+      exifObj["GPS"][piexif.GPSIFD.GPSLatitudeRef] = lat >= 0 ? "N" : "S";
+      exifObj["GPS"][piexif.GPSIFD.GPSLatitude] = geoDegRational(lat);
+      exifObj["GPS"][piexif.GPSIFD.GPSLongitudeRef] = lng >= 0 ? "E" : "W";
+      exifObj["GPS"][piexif.GPSIFD.GPSLongitude] = geoDegRational(lng);
+      exifObj["GPS"][piexif.GPSIFD.GPSAltitudeRef] = alt >= 0 ? 0 : 1;
+      exifObj["GPS"][piexif.GPSIFD.GPSAltitude] = [Math.abs(alt) * 100, 100];
+
+      var bytes = piexif.dump(exifObj);
+      var baseSlug = geoSlugFromTitle(title);
+      var multi = validImgs.length > 1;
+
+      for (var k = 0; k < validImgs.length; k++) {
+        (function (imgObj, index) {
+          setTimeout(function () {
+            var jpeg = geoJpegBase64(imgObj);
+            var finalB64 = piexif.insert(bytes, jpeg);
+            var fileName = multi ? (baseSlug + "-" + (index + 1) + ".jpg") : (baseSlug + ".jpg");
+            var a = document.createElement("a");
+            a.href = finalB64;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }, index * 350);
+        })(validImgs[k], k);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Lỗi Exif: " + (error.message || error));
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var imgIn = document.getElementById("geoImageInput");
+    if (imgIn) imgIn.addEventListener("change", function (e) { geoPreviewImages(e.target.files); });
+    var parseBtn = document.getElementById("geoParseUrlBtn");
+    if (parseBtn) parseBtn.addEventListener("click", function () { geoParseMapsUrl(true); });
+    var mapsUrl = document.getElementById("geoMapsUrl");
+    if (mapsUrl) mapsUrl.addEventListener("change", function () { geoParseMapsUrl(false); });
+    var proc = document.getElementById("geoProcessBtn");
+    if (proc) proc.addEventListener("click", geoProcess);
+    function syncFromInputs() {
+      var lat = parseFloat(document.getElementById("geoLat").value);
+      var lng = parseFloat(document.getElementById("geoLng").value);
+      if (!isNaN(lat) && !isNaN(lng)) geoSetLocation(lat, lng);
+    }
+    var gla = document.getElementById("geoLat");
+    var gln = document.getElementById("geoLng");
+    if (gla) gla.addEventListener("change", syncFromInputs);
+    if (gln) gln.addEventListener("change", syncFromInputs);
+    setTimeout(geoInitMap, 300);
+  });
+})();
+</script>
+
+<script>
+/* ===== FIND & REPLACE LOGIC ===== */
+(function () {
+  function showNotice() {
+    var notice = document.getElementById('toastNotice');
+    if (!notice) return;
+    notice.style.display = 'inline';
+    setTimeout(function() { notice.style.display = 'none'; }, 1000);
+  }
+
+  var isTagOpen = false;
+  function toggleTag(tag) {
+    var textarea = document.getElementById('brMainText');
+    var btn = document.getElementById('pBtn');
+    if (!textarea) return;
+    var start = textarea.selectionStart;
+    var text = textarea.value;
+    var insertText = '';
+    if (!isTagOpen) {
+      insertText = '<' + tag + '>';
+      isTagOpen = true;
+      if (btn) btn.innerHTML = 'Đóng &lt;/' + tag + '&gt;';
+    } else {
+      insertText = '</' + tag + '>';
+      isTagOpen = false;
+      if (btn) btn.innerHTML = 'Mở &lt;' + tag + '&gt;';
+    }
+    textarea.value = text.substring(0, start) + insertText + text.substring(start);
+    textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
+    textarea.focus();
+  }
+
+  function qs(sel, root){ return (root || document).querySelector(sel); }
+  function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+  function esc(s){
+    var special = '.*+?^${}()|[]\\';
+    var out = '';
+    for (var i = 0; i < s.length; i++) {
+      var ch = s.charAt(i);
+      if (special.indexOf(ch) !== -1) out += '\\' + ch;
+      else out += ch;
+    }
+    return out;
+  }
+
+  function splitTerms(raw){
+    if (raw == null || raw === '') return [];
+    if (/^\s+$/.test(raw)) return [raw];
+    var parts = raw.split(/[\n,|]+/);
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var t = parts[i];
+      if (t.length && /^\s+$/.test(t)) { out.push(t); continue; }
+      t = t.replace(/^\s+|\s+$/g, '');
+      if (t !== '') out.push(t);
+    }
+    return out;
+  }
+
+  function tidy(text){
+    text = text.replace(/[ \t]{2,}/g, ' ');
+    text = text.replace(/[ \t]+([,.;:!?])/g, '$1');
+    text = text.replace(/[ \t]+\>/g, '>');
+    text = text.replace(/<([a-zA-Z0-9]+)((?:\s+[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*))*)\s*>/g, function(m, name, attrs){
+      if (!attrs || !attrs.replace(/\s/g, '')) return '<' + name + '>';
+      attrs = attrs.replace(/[ \t]{2,}/g, ' ').replace(/^[ \t]+|[ \t]+$/g, '');
+      return '<' + name + (attrs ? ' ' + attrs : '') + '>';
+    });
+    text = text.replace(/[ \t]+\>/g, '>');
+    var lines = text.split(String.fromCharCode(10));
+    for (var i = 0; i < lines.length; i++) {
+      lines[i] = lines[i].replace(/^[ \t]+|[ \t]+$/g, '');
+    }
+    text = lines.join(String.fromCharCode(10));
+    text = text.replace(/[ \t]{2,}/g, ' ');
+    return text;
+  }
+
+  function doReplace(){
+    var ta = document.getElementById('brMainText');
+    var stats = document.getElementById('brStats');
+    if (!ta) return;
+    var text = ta.value;
+    if (!text) { if (stats) stats.textContent = 'Lượt: 0'; return; }
+
+    var matchCase = !!(document.getElementById('brMatchCase') || {}).checked;
+    var wholeWord = !!(document.getElementById('brWholeWord') || {}).checked;
+    var useRegex = !!(document.getElementById('brUseRegex') || {}).checked;
+    var finds = qsa('.br-find');
+    var reps = qsa('.br-replace');
+    var total = 0;
+
+    for (var i = 0; i < finds.length; i++) {
+      var raw = finds[i].value || '';
+      var terms = splitTerms(raw);
+      if (!terms.length && raw !== '') terms = [raw];
+      terms.sort(function(a, b){ return b.length - a.length; });
+      var rep = reps[i] ? (reps[i].value || '') : '';
+
+      for (var j = 0; j < terms.length; j++) {
+        var term = terms[j];
+        if (term === '') continue;
+        try {
+          var flags = 'g';
+          if (!matchCase) flags += 'i';
+          var pat = useRegex ? term : esc(term);
+          if (!pat) continue;
+          if (wholeWord && term.replace(/\s/g, '') !== '') {
+            pat = '(?:^|\\s)' + pat + '(?=\\s|$)';
+          }
+          var re = new RegExp(pat, flags);
+          var m = text.match(re);
+          if (m) total += m.length;
+          if (wholeWord && term.replace(/\s/g, '') !== '' && rep === '') {
+            text = text.replace(re, function(matched){
+              return /^\s/.test(matched) ? ' ' : '';
+            });
+          } else {
+            text = text.replace(re, rep);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+
+    text = tidy(text);
+    ta.value = text;
+    if (stats) stats.textContent = 'Lượt: ' + total;
+  }
+
+  function addRule(){
+    var list = document.getElementById('brRulesList');
+    if (!list) return;
+    var div = document.createElement('div');
+    div.className = 'br-rule';
+    div.innerHTML = '<div class="br-field"><label>Tìm</label><textarea class="br-find" rows="2" placeholder="từ1, từ2"></textarea></div>' +
+      '<div class="br-field"><label>Thay bằng (trống = xóa)</label><input type="text" class="br-replace" placeholder="Để trống nếu muốn xóa"/></div>' +
+      '<button class="br-del" type="button">X</button>';
+    list.appendChild(div);
+    var btn = div.querySelector('.br-del');
+    if (btn) btn.onclick = function(){ removeRule(btn); };
+  }
+
+  function removeRule(btn){
+    var list = document.getElementById('brRulesList');
+    if (!list) return;
+    if (qsa('.br-rule').length > 1) {
+      var row = btn.parentElement;
+      if (row) row.remove();
+    }
+  }
+
+  function bind(){
+    var root = document.getElementById('brApp');
+    if (!root || root.getAttribute('data-br-bound') === '1') return;
+    var exec = document.getElementById('brExecute');
+    if (!exec) return;
+    root.setAttribute('data-br-bound', '1');
+
+    var addBtn = document.getElementById('brAddRule');
+    if (addBtn) addBtn.onclick = function(e){ e.preventDefault(); addRule(); };
+    exec.onclick = function(e){ e.preventDefault(); doReplace(); };
+
+    var clearBtn = document.getElementById('brClearAll');
+    if (clearBtn) clearBtn.onclick = function(e){
+      e.preventDefault();
+      var ta = document.getElementById('brMainText');
+      var stats = document.getElementById('brStats');
+      if (ta) ta.value = '';
+      if (stats) stats.textContent = 'Lượt: 0';
+    };
+
+    var copyBtn = document.getElementById('brCopy');
+    if (copyBtn) copyBtn.onclick = function(e){
+      e.preventDefault();
+      var ta = document.getElementById('brMainText');
+      if (!ta || !ta.value) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ta.value).then(function(){ alert('Đã sao chép!'); });
+      } else {
+        ta.select();
+        document.execCommand('copy');
+        alert('Đã sao chép!');
+      }
+    };
+
+    var del0 = document.getElementById('brDel0');
+    if (del0) del0.onclick = function(){ removeRule(del0); };
+
+    var pBtn = document.getElementById('pBtn');
+    if (pBtn) pBtn.onclick = function(){ toggleTag('p'); };
+    var wBtn = document.getElementById('brCopyWidth');
+    if (wBtn) wBtn.onclick = function(){
+      if (navigator.clipboard) navigator.clipboard.writeText('width="800px"').then(showNotice);
+    };
+    var hBtn = document.getElementById('brCopyHeight');
+    if (hBtn) hBtn.onclick = function(){
+      if (navigator.clipboard) navigator.clipboard.writeText('height="600px"').then(showNotice);
+    };
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+  setTimeout(bind, 500);
+  setTimeout(bind, 1500);
+})();
+</script>
+
+
+<script>
+/* ===== GOLD STAR → WebP Quick Converter ===== */
+(function () {
+  var webpQueue = [];
+  var webpMode = 'lossy';
+
+  window.webpSetMode = function (mode) {
+    webpMode = mode;
+    var wrap = document.getElementById('webpQualityWrap');
+    if (wrap) wrap.style.opacity = mode === 'lossless' ? '0.4' : '1';
+    if (wrap) wrap.style.pointerEvents = mode === 'lossless' ? 'none' : 'auto';
+  };
+
+  window.toggleWebpQuick = function (force) {
+    var panel = document.getElementById('webpQuickPanel');
+    if (!panel) return;
+    if (force === false) {
+      panel.classList.remove('show');
+      return;
+    }
+    panel.classList.toggle('show');
+  };
+
+  function formatBytes(bytes) {
+    if (!bytes) return '0 B';
+    var k = 1024, sizes = ['B', 'KB', 'MB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+  }
+
+  function convertToWebP(file) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function () {
+        try {
+          var canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          var ctx = canvas.getContext('2d', { colorSpace: 'srgb' });
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0);
+          var q = webpMode === 'lossless' ? 1 : (parseInt((document.getElementById('webpQuality') || {}).value || 85, 10) / 100);
+          canvas.toBlob(function (blob) {
+            URL.revokeObjectURL(url);
+            if (blob) resolve(blob);
+            else reject(new Error('WebP export failed'));
+          }, 'image/webp', q);
+        } catch (e) {
+          URL.revokeObjectURL(url);
+          reject(e);
+        }
+      };
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error('Load image failed'));
+      };
+      img.src = url;
+    });
+  }
+
+  function renderWebpList() {
+    var list = document.getElementById('webpFileList');
+    var info = document.getElementById('webpSavedInfo');
+    var zipBtn = document.getElementById('webpZipBtn');
+    var clearBtn = document.getElementById('webpClearBtn');
+    if (!list) return;
+    list.innerHTML = '';
+    var totalOrig = 0, totalWebp = 0, done = 0;
+    webpQueue.forEach(function (item, idx) {
+      totalOrig += item.origSize;
+      if (item.webpSize) { totalWebp += item.webpSize; done++; }
+      var row = document.createElement('div');
+      row.className = 'webp-item';
+      var thumb = item.origUrl ? '<img src="' + item.origUrl + '" alt="">' : '';
+      var meta = formatBytes(item.origSize);
+      if (item.status === 'done') {
+        var pct = item.origSize ? (((item.origSize - item.webpSize) / item.origSize) * 100).toFixed(0) : 0;
+        meta += ' → <b style="color:#4ade80">' + formatBytes(item.webpSize) + '</b> (-' + pct + '%)';
+      } else if (item.status === 'busy') {
+        meta += ' · <span style="color:#fbbf24">Đang nén...</span>';
+      } else if (item.status === 'err') {
+        meta += ' · <span style="color:#f87171">Lỗi</span>';
+      }
+      var actions = '';
+      if (item.status === 'done' && item.webpUrl) {
+        var name = item.name.replace(/\.[^/.]+$/, '') + '.webp';
+        actions = '<a class="webp-dl" href="' + item.webpUrl + '" download="' + name + '">Tải</a>';
+      }
+      actions += '<button type="button" class="webp-rm" data-idx="' + idx + '">✕</button>';
+      row.innerHTML = thumb + '<div style="flex:1;min-width:0"><div class="webp-name">' + item.name + '</div><div class="webp-meta">' + meta + '</div></div>' + actions;
+      list.appendChild(row);
+    });
+    list.querySelectorAll('.webp-rm').forEach(function (btn) {
+      btn.onclick = function () {
+        var i = parseInt(btn.getAttribute('data-idx'), 10);
+        if (webpQueue[i]) {
+          if (webpQueue[i].origUrl) URL.revokeObjectURL(webpQueue[i].origUrl);
+          if (webpQueue[i].webpUrl) URL.revokeObjectURL(webpQueue[i].webpUrl);
+          webpQueue.splice(i, 1);
+          renderWebpList();
+        }
+      };
+    });
+    if (done > 0) {
+      var saved = totalOrig - totalWebp;
+      var p = totalOrig ? ((saved / totalOrig) * 100).toFixed(1) : 0;
+      if (info) info.textContent = 'Tiết kiệm: ' + formatBytes(saved > 0 ? saved : 0) + ' (' + p + '%) · ' + done + ' ảnh';
+      if (zipBtn) zipBtn.style.display = 'inline-block';
+      if (clearBtn) clearBtn.style.display = 'inline-block';
+    } else {
+      if (info) info.textContent = webpQueue.length ? 'Đang xử lý...' : '';
+      if (zipBtn) zipBtn.style.display = webpQueue.length ? 'none' : 'none';
+      if (clearBtn) clearBtn.style.display = webpQueue.length ? 'inline-block' : 'none';
+    }
+  }
+
+  async function processWebpQueue() {
+    for (var i = 0; i < webpQueue.length; i++) {
+      var item = webpQueue[i];
+      if (item.status !== 'pending') continue;
+      item.status = 'busy';
+      renderWebpList();
+      try {
+        var blob = await convertToWebP(item.file);
+        item.webpBlob = blob;
+        item.webpSize = blob.size;
+        item.webpUrl = URL.createObjectURL(blob);
+        item.status = 'done';
+      } catch (e) {
+        console.error(e);
+        item.status = 'err';
+      }
+      renderWebpList();
+    }
+  }
+
+  function addWebpFiles(files) {
+    Array.from(files).forEach(function (file) {
+      if (!file.type.startsWith('image/')) return;
+      webpQueue.push({
+        file: file,
+        name: file.name,
+        origSize: file.size,
+        origUrl: URL.createObjectURL(file),
+        status: 'pending',
+        webpBlob: null,
+        webpSize: 0,
+        webpUrl: null
+      });
+    });
+    renderWebpList();
+    processWebpQueue();
+  }
+
+  window.webpClearAll = function () {
+    webpQueue.forEach(function (item) {
+      if (item.origUrl) URL.revokeObjectURL(item.origUrl);
+      if (item.webpUrl) URL.revokeObjectURL(item.webpUrl);
+    });
+    webpQueue = [];
+    renderWebpList();
+  };
+
+  window.webpDownloadZip = async function () {
+    var done = webpQueue.filter(function (i) { return i.status === 'done' && i.webpBlob; });
+    if (!done.length) return;
+    if (typeof JSZip === 'undefined') {
+      alert('JSZip chưa tải xong');
+      return;
+    }
+    var zip = new JSZip();
+    var folder = zip.folder('webp_optimized');
+    done.forEach(function (item) {
+      folder.file(item.name.replace(/\.[^/.]+$/, '') + '.webp', item.webpBlob);
+    });
+    var content = await zip.generateAsync({ type: 'blob' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = 'webp_optimized_images.zip';
+    a.click();
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var drop = document.getElementById('webpDropZone');
+    var input = document.getElementById('webpFileInput');
+    if (drop && input) {
+      drop.addEventListener('click', function () { input.click(); });
+      input.addEventListener('change', function (e) {
+        if (e.target.files && e.target.files.length) addWebpFiles(e.target.files);
+        e.target.value = '';
+      });
+      drop.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        drop.classList.add('drag');
+      });
+      drop.addEventListener('dragleave', function () { drop.classList.remove('drag'); });
+      drop.addEventListener('drop', function (e) {
+        e.preventDefault();
+        drop.classList.remove('drag');
+        if (e.dataTransfer.files.length) addWebpFiles(e.dataTransfer.files);
+      });
+    }
+  });
+})();
+
+/* ===== RED STAR → Sug / Slug tool ===== */
+(function () {
+  window.toggleSugTool = function () {
+    var card = document.getElementById('sugToolCard');
+    if (card) card.classList.toggle('show');
+  };
+
+  window.sugAdd = function () {
+    var txt = document.getElementById('sugInputText');
+    if (!txt || !txt.value) return;
+    var val = txt.value.toLowerCase().trim();
+    txt.value = val.replace(/\s+/g, '-');
+  };
+
+  window.sugRemove = function () {
+    var txt = document.getElementById('sugInputText');
+    if (!txt || !txt.value) return;
+    txt.value = txt.value.toLowerCase().replace(/-/g, ' ');
+  };
+
+  window.sugCopy = function () {
+    var txt = document.getElementById('sugInputText');
+    if (!txt || !txt.value) return;
+    function ok() {
+      var toast = document.getElementById('sugToastMsg');
+      if (toast) {
+        toast.innerText = 'Đã sao chép!';
+        setTimeout(function () { toast.innerText = ''; }, 2000);
+      }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt.value).then(ok).catch(function () {
+        txt.select();
+        try { document.execCommand('copy'); ok(); } catch (e) {}
+      });
+    } else {
+      txt.select();
+      try { document.execCommand('copy'); ok(); } catch (e) {}
+    }
+  };
+
+  window.sugClear = function () {
+    var txt = document.getElementById('sugInputText');
+    var toast = document.getElementById('sugToastMsg');
+    if (txt) txt.value = '';
+    if (toast) toast.innerText = '';
+  };
+})();
 </script>
 
 </body>
