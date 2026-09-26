@@ -16,7 +16,10 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- JSZip for WebP batch download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Google Fonts -->
+        <!-- Marked.js - render Markdown / bảng trong chat -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
 <style>
         * {
@@ -319,6 +322,53 @@
         .tool-btn { border: 0; background: transparent; color: #8795b1; font-size: 18px; cursor: pointer; }
         .send-btn { width: 39px; height: 39px; border: 0; border-radius: 12px; background: linear-gradient(135deg, #5bdbff, #7465ff); color: white; cursor: pointer; box-shadow: 0 8px 20px rgba(88,151,255,.25); }
         .hint { text-align: center; color: #56647d; font-size: 9px; margin-top: 8px; }
+
+        /* Markdown trong bubble AI */
+        .bubble table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        .bubble th, .bubble td {
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 8px 10px;
+            text-align: left;
+        }
+        .bubble th {
+            background: rgba(255,255,255,0.08);
+            font-weight: 700;
+        }
+        .bubble p { margin: 6px 0; }
+        .bubble ul, .bubble ol { margin: 8px 0; padding-left: 22px; }
+        .bubble code {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .bubble pre {
+            background: rgba(0,0,0,0.35);
+            padding: 12px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+        .bubble pre code { background: none; padding: 0; }
+        .bubble a { color: #7dd3fc; text-decoration: underline; }
+        .bubble h1, .bubble h2, .bubble h3, .bubble h4 {
+            margin: 10px 0 6px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .bubble blockquote {
+            border-left: 3px solid rgba(168,85,247,0.6);
+            margin: 8px 0;
+            padding-left: 12px;
+            color: #aebbd3;
+        }
+
 
 
         /* ===== JPG CONVERTER TOOL (dark theme fit) ===== */
@@ -1784,7 +1834,12 @@
             const aiReply = await askAI(v);
 
             if (aiReply) {
-                loadingMsg.querySelector('.bubble').textContent = aiReply;
+                if (typeof marked !== 'undefined' && marked.parse) {
+                    loadingMsg.querySelector('.bubble').innerHTML = marked.parse(aiReply);
+                    loadingMsg.querySelector('.bubble').style.whiteSpace = 'normal';
+                } else {
+                    loadingMsg.querySelector('.bubble').textContent = aiReply;
+                }
                 chatHistory.push({ role: 'model', text: aiReply });
             } else {
                 loadingMsg.querySelector('.bubble').textContent = 'Không nhận được phản hồi từ AI.';
