@@ -444,16 +444,16 @@
 </div>
 
 <!-- JAVASCRIPT LOGIC - KẾT NỐI CHATGPT (OPENAI API) -->
+<!-- JAVASCRIPT LOGIC - KẾT NỐI QUA CLOUDFLARE WORKER PROXY -->
 <script>
-    // Điền API Key của OpenAI vào đây (Nếu chạy qua Worker/Proxy riêng có thể chỉnh OPENAI_API_URL)
-    const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'; 
-    const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+    // URL Cloudflare Worker của bạn (đã được lưu API Key an toàn ở Server)
+    const WORKER_URL = 'https://falling-cell-9f22.dinhphu-skv.workers.dev';
 
     const messages = document.getElementById('messages');
     const input = document.getElementById('prompt');
     const send = document.getElementById('send');
     
-    // Lịch sử trò chuyện theo chuẩn OpenAI API ({ role: 'user'|'assistant'|'system', content: string })
+    // Lịch sử trò chuyện theo chuẩn OpenAI API
     let chatHistory = [
         { role: 'system', content: 'Bạn là một trợ lý AI hữu ích, thông minh và thân thiện.' }
     ];
@@ -468,20 +468,14 @@
         return m;
     }
 
-    async function callChatGPT(messagesPayload) {
-        // Kiểm tra nếu chưa cấu hình API Key
-        if (!OPENAI_API_KEY || OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
-            throw new Error('Vui lòng cấu hình OPENAI_API_KEY trong file HTML!');
-        }
-
-        const response = await fetch(OPENAI_API_URL, {
+    async function callWorkerAPI(messagesPayload) {
+        const response = await fetch(WORKER_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini', // Bạn có thể đổi sang 'gpt-4o' hoặc 'gpt-3.5-turbo'
+                model: 'gpt-4o-mini',
                 messages: messagesPayload,
                 temperature: 0.7
             })
@@ -490,12 +484,13 @@
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.error?.message || 'Lỗi kết nối OpenAI API');
+            throw new Error(data.error?.message || data.message || 'Lỗi kết nối tới Worker API');
         }
 
-        const text = data?.choices?.[0]?.message?.content;
+        // Tùy theo Worker của bạn trả về cấu trúc gốc của OpenAI hay trả về trực tiếp text
+        const text = data?.choices?.[0]?.message?.content || data?.reply || data?.text;
         if (!text) {
-            throw new Error('Không nhận được câu trả lời từ ChatGPT');
+            throw new Error('Không nhận được phản hồi hợp lệ từ Worker');
         }
         return text;
     }
@@ -512,12 +507,12 @@
         const loadingMsg = addMessage('ChatGPT đang suy nghĩ...', 'ai');
 
         try {
-            const aiReply = await callChatGPT(chatHistory);
+            const aiReply = await callWorkerAPI(chatHistory);
 
             loadingMsg.querySelector('.bubble').textContent = aiReply;
             chatHistory.push({ role: 'assistant', content: aiReply });
         } catch (error) {
-            console.error('ChatGPT API Error:', error);
+            console.error('Worker API Error:', error);
             loadingMsg.querySelector('.bubble').textContent = `⚠️ ${error.message}`;
             chatHistory.pop(); // Xóa tin nhắn hỏng khỏi lịch sử
         }
@@ -540,6 +535,5 @@
         document.querySelectorAll('#tool-jpg-panel, #tool-text-panel, #tool-geo-panel, #tool-replace-panel').forEach(p => p.classList.remove('active'));
     };
 </script>
-
 </body>
 </html>
