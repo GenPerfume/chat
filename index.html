@@ -17,18 +17,8 @@
     <!-- JSZip for WebP batch download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-
-    <!-- IMPORT MAP CHO GOOGLE GEN AI SDK -->
-    <script type="importmap">
-      {
-        "imports": {
-          "@google/genai": "https://esm.run/@google/genai"
-        }
-      }
-    </script>
-
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet">
+<style>
         * {
             box-sizing: border-box;
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -39,11 +29,19 @@
         }
 
         html, body {
-            margin: 0;
-            height: 100%;
-            background-color: #030014;
-            color: #eef4ff;
-            overflow: hidden;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 100% !important;
+            width: 100% !important;
+            background-color: #030014 !important;
+            color: #eef4ff !important;
+            overflow: hidden !important;
+        }
+        .app-container {
+            height: 100vh !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         /* Nền Lưới Không Gian 3D Mesh Grid */
@@ -1424,7 +1422,7 @@
                 <div class="flex items-center gap-2">
                     <strong class="text-white" id="chathead-title">✨ Trợ lý AI DigitalGroup</strong>
                 </div>
-                <span class="model-badge" id="chathead-badge"><i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi <-> Đáp</span>
+                <span class="model-badge" id="chathead-badge"><i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi ↔ Đáp</span>
             </div>
 
             <!-- MESSAGES CONTAINER (chat view) -->
@@ -1725,7 +1723,10 @@
 
 <!-- JAVASCRIPT LOGIC - DÙNG MODEL CHUẨN MỚI NHẤT -->
 <script type="module">
-    const PROXY_URL = 'https://cool-moon-97d2.dinhphu-skv.workers.dev';
+    const { GoogleGenAI } = await import('https://esm.run/@google/genai');
+
+    const GEMINI_API_KEY = 'AQ.Ab8RN6J_sCTO1LyxB53n4uDKdhvLvzwBw2CQN6_f5a9K6xWmfw'; 
+    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
     const messages = document.getElementById('messages');
     const input = document.getElementById('prompt');
@@ -1742,29 +1743,29 @@
         return m;
     }
 
-    async function callGemini(contents) {
-        const response = await fetch(PROXY_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                contents: contents
-            })
-        });
+    // Model hợp lệ theo Gemini API (2026): gemini-3.1-pro-preview → fallback gemini-3-flash-preview → gemini-3.8-flash
+    async function generateContentWithFallback(contents, retryCount = 0) {
+        const models = [
+            'gemini-3.1-pro-preview',
+            'gemini-3-flash-preview',
+            'gemini-3.8-flash'
+        ];
+        const targetModel = models[Math.min(retryCount, models.length - 1)];
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error?.message || data.error || 'Lỗi gọi API');
+        try {
+            const response = await ai.models.generateContent({
+                model: targetModel,
+                contents: contents,
+            });
+            return response;
+        } catch (error) {
+            if (retryCount < models.length - 1) {
+                console.warn(`Model ${targetModel} lỗi, đang thử model tiếp theo...`, error?.message || error);
+                await new Promise(resolve => setTimeout(resolve, 800));
+                return await generateContentWithFallback(contents, retryCount + 1);
+            }
+            throw error;
         }
-
-        // Lấy nội dung trả về từ Gemini
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) {
-            throw new Error('Không nhận được nội dung từ AI');
-        }
-        return text;
     }
 
     async function handleSend(userText = null) {
@@ -1779,12 +1780,18 @@
         const loadingMsg = addMessage('Đang xử lý...', 'ai');
 
         try {
-            const aiReply = await callGemini(chatHistory);
+            const response = await generateContentWithFallback(chatHistory);
+            const aiReply = response.text;
 
-            loadingMsg.querySelector('.bubble').textContent = aiReply;
-            chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
+            if (aiReply) {
+                loadingMsg.querySelector('.bubble').textContent = aiReply;
+                chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
+            } else {
+                loadingMsg.querySelector('.bubble').textContent = 'Không nhận được phản hồi từ AI.';
+                chatHistory.pop();
+            }
         } catch (error) {
-            console.error('Proxy Error:', error);
+            console.error('Gemini SDK Error:', error);
             loadingMsg.querySelector('.bubble').textContent = `Lỗi hệ thống: ${error.message || 'Chưa thể phản hồi lúc này.'}`;
             chatHistory.pop();
         }
@@ -1938,7 +1945,7 @@
 </script>
 
 <script>
-/* ===== VIEW TOGGLE: Chat <-> Tools ===== */
+/* ===== VIEW TOGGLE: Chat ↔ Tools ===== */
 function closeMobileMenu() {
     var md = document.getElementById('mobile-dropdown');
     if (md && !md.classList.contains('hidden')) {
@@ -1983,7 +1990,7 @@ window.showChatView = function () {
     if (composer) composer.classList.remove('chat-view-hidden');
     hideAllTools();
     if (title) title.textContent = '✨ Trợ lý AI DigitalGroup';
-    if (badge) badge.innerHTML = '<i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi <-> Đáp';
+    if (badge) badge.innerHTML = '<i class="fa-solid fa-sparkles text-purple-400 mr-1"></i> Chat Hỏi ↔ Đáp';
     closeMobileMenu();
 };
 
