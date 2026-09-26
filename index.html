@@ -1725,10 +1725,7 @@
 
 <!-- JAVASCRIPT LOGIC - DÙNG MODEL CHUẨN MỚI NHẤT -->
 <script type="module">
-    import { GoogleGenAI } from '@google/genai';
-
-    const GEMINI_API_KEY = 'AQ.Ab8RN6J_sCTO1LyxB53n4uDKdhvLvzwBw2CQN6_f5a9K6xWmfw'; 
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    const PROXY_URL = 'https://cool-moon-97d2.dinhphu-skv.workers.dev';
 
     const messages = document.getElementById('messages');
     const input = document.getElementById('prompt');
@@ -1745,29 +1742,29 @@
         return m;
     }
 
-    // Model hợp lệ theo Gemini API (2026): gemini-3.1-pro-preview → fallback gemini-3-flash-preview → gemini-3.8-flash
-    async function generateContentWithFallback(contents, retryCount = 0) {
-        const models = [
-            'gemini-3.1-pro-preview',
-            'gemini-3-flash-preview',
-            'gemini-3.8-flash'
-        ];
-        const targetModel = models[Math.min(retryCount, models.length - 1)];
+    async function callGemini(contents) {
+        const response = await fetch(PROXY_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: contents
+            })
+        });
 
-        try {
-            const response = await ai.models.generateContent({
-                model: targetModel,
-                contents: contents,
-            });
-            return response;
-        } catch (error) {
-            if (retryCount < models.length - 1) {
-                console.warn(`Model ${targetModel} lỗi, đang thử model tiếp theo...`, error?.message || error);
-                await new Promise(resolve => setTimeout(resolve, 800));
-                return await generateContentWithFallback(contents, retryCount + 1);
-            }
-            throw error;
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || data.error || 'Lỗi gọi API');
         }
+
+        // Lấy nội dung trả về từ Gemini
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) {
+            throw new Error('Không nhận được nội dung từ AI');
+        }
+        return text;
     }
 
     async function handleSend(userText = null) {
@@ -1782,18 +1779,12 @@
         const loadingMsg = addMessage('Đang xử lý...', 'ai');
 
         try {
-            const response = await generateContentWithFallback(chatHistory);
-            const aiReply = response.text;
+            const aiReply = await callGemini(chatHistory);
 
-            if (aiReply) {
-                loadingMsg.querySelector('.bubble').textContent = aiReply;
-                chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
-            } else {
-                loadingMsg.querySelector('.bubble').textContent = 'Không nhận được phản hồi từ AI.';
-                chatHistory.pop();
-            }
+            loadingMsg.querySelector('.bubble').textContent = aiReply;
+            chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
         } catch (error) {
-            console.error('Gemini SDK Error:', error);
+            console.error('Proxy Error:', error);
             loadingMsg.querySelector('.bubble').textContent = `Lỗi hệ thống: ${error.message || 'Chưa thể phản hồi lúc này.'}`;
             chatHistory.pop();
         }
