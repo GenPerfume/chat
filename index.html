@@ -1721,12 +1721,10 @@
     </main>
 </div>
 
-<!-- JAVASCRIPT LOGIC - DÙNG MODEL CHUẨN MỚI NHẤT -->
-<script type="module">
-    const { GoogleGenAI } = await import('https://esm.run/@google/genai');
-
-    const GEMINI_API_KEY = 'AQ.Ab8RN6J_sCTO1LyxB53n4uDKdhvLvzwBw2CQN6_f5a9K6xWmfw'; 
-    const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+<!-- JAVASCRIPT LOGIC - CHAT VIA CLOUDFLARE WORKER (từ chat1.html) -->
+<script>
+    // URL Cloudflare Worker (đã giấu API Key an toàn)
+    const WORKER_URL = "https://nameless-star-6c02.dinhphu-skv.workers.dev";
 
     const messages = document.getElementById('messages');
     const input = document.getElementById('prompt');
@@ -1743,28 +1741,31 @@
         return m;
     }
 
-    // Model hợp lệ theo Gemini API (2026): gemini-3.1-pro-preview → fallback gemini-3-flash-preview → gemini-3.8-flash
-    async function generateContentWithFallback(contents, retryCount = 0) {
-        const models = [
-            'gemini-3.1-pro-preview',
-            'gemini-3-flash-preview',
-            'gemini-3.8-flash'
-        ];
-        const targetModel = models[Math.min(retryCount, models.length - 1)];
-
+    async function askAI(userPrompt) {
         try {
-            const response = await ai.models.generateContent({
-                model: targetModel,
-                contents: contents,
+            // Gửi kèm lịch sử hội thoại để AI nhớ ngữ cảnh
+            const payloadMessages = chatHistory.map(function (h) {
+                return { role: h.role === 'model' ? 'assistant' : 'user', content: h.text };
             });
-            return response;
-        } catch (error) {
-            if (retryCount < models.length - 1) {
-                console.warn(`Model ${targetModel} lỗi, đang thử model tiếp theo...`, error?.message || error);
-                await new Promise(resolve => setTimeout(resolve, 800));
-                return await generateContentWithFallback(contents, retryCount + 1);
+            payloadMessages.push({ role: 'user', content: userPrompt });
+
+            const response = await fetch(WORKER_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ messages: payloadMessages })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                return "Lỗi Server: " + (data.error.message || JSON.stringify(data.error));
             }
-            throw error;
+
+            return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content)
+                || "Không nhận được phản hồi từ AI.";
+        } catch (err) {
+            console.error("Lỗi Fetch:", err);
+            return "Lỗi kết nối đến máy chủ AI.";
         }
     }
 
@@ -1775,24 +1776,23 @@
         addMessage(v, 'user');
         if (!userText) input.value = '';
 
-        chatHistory.push({ role: 'user', parts: [{ text: v }] });
+        chatHistory.push({ role: 'user', text: v });
 
-        const loadingMsg = addMessage('Đang xử lý...', 'ai');
+        const loadingMsg = addMessage('AI đang suy nghĩ...', 'ai');
 
         try {
-            const response = await generateContentWithFallback(chatHistory);
-            const aiReply = response.text;
+            const aiReply = await askAI(v);
 
             if (aiReply) {
                 loadingMsg.querySelector('.bubble').textContent = aiReply;
-                chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
+                chatHistory.push({ role: 'model', text: aiReply });
             } else {
                 loadingMsg.querySelector('.bubble').textContent = 'Không nhận được phản hồi từ AI.';
                 chatHistory.pop();
             }
         } catch (error) {
-            console.error('Gemini SDK Error:', error);
-            loadingMsg.querySelector('.bubble').textContent = `Lỗi hệ thống: ${error.message || 'Chưa thể phản hồi lúc này.'}`;
+            console.error('Chat Error:', error);
+            loadingMsg.querySelector('.bubble').textContent = 'Lỗi hệ thống: ' + (error.message || 'Chưa thể phản hồi lúc này.');
             chatHistory.pop();
         }
     }
@@ -1801,14 +1801,19 @@
         handleSend(text);
     };
 
-    send.onclick = () => handleSend();
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
+    if (send) send.onclick = function () { handleSend(); };
+    if (input) input.addEventListener('keydown', function (e) { if (e.key === 'Enter') handleSend(); });
 
-    document.getElementById('newChat').onclick = () => {
-        chatHistory = [];
-        messages.innerHTML = '<div class="msg"><div class="avatar">✦</div><div class="bubble">Cuộc trò chuyện mới đã sẵn sàng. Bạn muốn bắt đầu với điều gì?</div></div>';
-        input.focus();
-    };
+    var newChatBtn = document.getElementById('newChat');
+    if (newChatBtn) {
+        newChatBtn.onclick = function () {
+            chatHistory = [];
+            messages.innerHTML = '<div class="msg"><div class="avatar">✦</div><div class="bubble">Cuộc trò chuyện mới đã sẵn sàng. Bạn muốn bắt đầu với điều gì?</div></div>';
+            if (input) input.focus();
+        };
+    }
+</script>
+
 </script>
 
 <script>
