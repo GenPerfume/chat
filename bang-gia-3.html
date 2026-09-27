@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Giá Dịch Vụ Website & SEO 3D Sci-Fi Hologram</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            cyan: '#00f0ff',
+                            magenta: '#ff007f',
+                            purple: '#7000ff',
+                            neon: '#39ff14',
+                            gold: '#ffd700',
+                            dark: '#030712'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* WebGL Background Canvas */
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Sci-Fi Grid Line Overlay */
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism & Cyber Border Glowing Cards */
+        .cyber-card {
+            background: rgba(10, 15, 30, 0.65);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 240, 255, 0.05);
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+            transition: 0.7s;
+            pointer-events: none;
+        }
+
+        .cyber-card:hover::before {
+            left: 100%;
+        }
+
+        .cyber-card:hover {
+            border-color: rgba(0, 240, 255, 0.8);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        /* Laser Scanner Beam Effect */
+        .scanner-beam {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #00f0ff, #ff007f, transparent);
+            box-shadow: 0 0 15px #00f0ff;
+            animation: scanAnim 4s linear infinite;
+        }
+
+        @keyframes scanAnim {
+            0% { top: -10%; opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* 3D Carousel Stage */
+        .carousel-stage {
+            perspective: 1200px;
+            position: relative;
+            width: 100%;
+            height: 620px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-rotator {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 350px;
+            height: 560px;
+            left: 50%;
+            top: 50%;
+            margin-left: -175px;
+            margin-top: -280px;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        /* Custom Hologram Glowing Text */
+        .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4); }
+        .text-glow-magenta { text-shadow: 0 0 10px rgba(255, 0, 127, 0.8), 0 0 20px rgba(255, 0, 127, 0.4); }
+        .text-glow-gold { text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #00f0ff; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ff007f; }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #00f0ff;
+            box-shadow: 0 0 12px #00f0ff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen text-gray-100 antialiased overflow-x-hidden">
+
+    <!-- WebGL Three.js Holographic Background -->
+    <canvas id="webgl-bg"></canvas>
+    <div class="cyber-grid"></div>
+
+    <!-- MAIN NAVIGATION & HEADER -->
+    <header class="relative z-10 pt-10 pb-6 px-4 text-center max-w-7xl mx-auto">
+        <!-- Sci-Fi Tag -->
+        <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full cyber-card border-cyber-cyan/50 text-cyber-cyan text-xs font-orbitron tracking-widest uppercase mb-6 animate-pulse">
+            <i class="fa-solid fa-atom text-cyber-magenta text-sm"></i> BẢNG GIÁ DỊCH VỤ SEO
+        </div>
+
+        <h1 class="font-orbitron text-4xl sm:text-6xl lg:text-7xl font-black tracking-wider text-white mb-4 uppercase">
+            Bảng Giá Dịch Vụ <span class="bg-clip-text text-transparent bg-gradient-to-r from-cyber-cyan via-cyber-magenta to-cyber-purple text-glow-cyan">SEO</span>
+        </h1>
+        <p class="text-gray-400 text-base sm:text-xl max-w-3xl mx-auto font-light leading-relaxed mb-8">
+            Tối ưu hạ tầng Website, thống lĩnh TOP 1 Google với DigitarGroup bằng Chuẩn SEO.
+        </p>
+
+        <!-- View Mode Switcher & Billing Toggle Row -->
+        <div class="flex flex-wrap items-center justify-center gap-6 mt-4">
+            <!-- View Mode Switcher -->
+            <div class="flex items-center gap-1 cyber-card p-1.5 rounded-2xl border-white/10">
+                <button id="btn-carousel-view" onclick="switchView('carousel')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-orbitron text-xs sm:text-sm font-bold transition duration-300 text-black bg-cyber-cyan shadow-lg shadow-cyber-cyan/30">
+                    <i class="fa-solid fa-cubes-stacked"></i> 3D Carousel
+                </button>
+                <button id="btn-matrix-view" onclick="switchView('matrix')" class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-orbitron text-xs sm:text-sm font-bold transition duration-300 text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-table-cells"></i> Matrix Table
+                </button>
+            </div>
+
+            <!-- Payment Switch Toggle (20% Off) -->
+            <div class="flex items-center gap-3 cyber-card p-1.5 rounded-full border-white/10">
+                <span id="label-monthly" class="text-xs sm:text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition text-white bg-cyber-purple/40">Thanh Toán Tháng</span>
+                <button id="billing-toggle" class="w-14 h-8 flex items-center rounded-full p-1 bg-gray-800 border border-cyber-cyan/30 cursor-pointer transition duration-300">
+                    <div id="toggle-circle" class="bg-cyber-cyan w-6 h-6 rounded-full shadow-lg shadow-cyber-cyan transform transition duration-300"></div>
+                </button>
+                <span id="label-yearly" class="text-xs sm:text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition text-gray-400 hover:text-white">
+                    Thanh Toán Năm <span class="bg-cyber-magenta text-white text-[10px] font-orbitron px-2 py-0.5 rounded-full ml-1 font-bold animate-pulse">-20%</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 1: 3D CAROUSEL VIEW -->
+    <section id="carousel-view-container" class="relative z-10 max-w-7xl mx-auto px-4 my-8 transition-all duration-500">
+        <!-- Navigation Arrows & Indicators -->
+        <div class="flex justify-between items-center max-w-4xl mx-auto mb-4 px-4">
+            <button onclick="rotateCarousel(-1)" class="cyber-card w-12 h-12 rounded-full flex items-center justify-center text-cyber-cyan hover:text-white hover:bg-cyber-cyan/20 transition text-xl">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="text-center font-orbitron text-xs text-cyber-cyan tracking-widest uppercase">
+                <span id="carousel-active-index" class="text-xl font-bold text-cyber-magenta">01</span> / 06 Gói Dịch Vụ
+            </div>
+            <button onclick="rotateCarousel(1)" class="cyber-card w-12 h-12 rounded-full flex items-center justify-center text-cyber-cyan hover:text-white hover:bg-cyber-cyan/20 transition text-xl">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="carousel-stage">
+            <div class="carousel-rotator" id="carousel-rotator">
+
+                <!-- 1. GÓI CƠ BẢN -->
+                <div class="carousel-item cyber-card p-6 flex flex-col justify-between border-cyber-cyan/30" onclick="selectCard(0)">
+                    <div class="scanner-beam"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-orbitron uppercase tracking-widest text-cyber-cyan px-2.5 py-1 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30">Tier 01</span>
+                            <i class="fa-solid fa-paper-plane text-cyber-cyan text-lg"></i>
+                        </div>
+                        <h3 class="font-orbitron text-2xl font-bold text-white mb-1">Cơ Bản</h3>
+                        <p class="text-gray-400 text-xs mb-4">Chuẩn hóa hạ tầng website nhỏ, khởi tạo Onpage SEO.</p>
+                        
+                        <div class="mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <span class="price-val font-orbitron text-3xl font-extrabold text-cyber-cyan" data-monthly="3.500.000" data-yearly="2.800.000">3.500.000</span>
+                            <span class="text-gray-400 text-xs">VNĐ / tháng</span>
+                        </div>
+
+                        <ul class="space-y-2 text-xs text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-cyan"></i> <span><strong>Sửa Website:</strong> Lỗi UI/UX cơ bản</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-cyan"></i> <span><strong>Onpage SEO:</strong> Tối ưu 10 trang cốt lõi</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-cyan"></i> <span><strong>Backlink:</strong> 20 Backlink Profile</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-cyan"></i> <span><strong>Content:</strong> 10 bài viết SEO (800 từ)</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-cyan"></i> <span><strong>Hình ảnh:</strong> 10 Graphic thiết kế</span></li>
+                            <li class="flex items-center gap-2 text-gray-600"><i class="fa-solid fa-xmark"></i> <span>Entity / Google Map / Youtube</span></li>
+                        </ul>
+                    </div>
+
+                    <button onclick="openModal('Gói Cơ Bản')" class="mt-4 w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-cyber-cyan/10 hover:bg-cyber-cyan hover:text-black text-cyber-cyan transition duration-300 border border-cyber-cyan/40">
+                        CHI TIẾT GÓI
+                    </button>
+                </div>
+
+                <!-- 2. GÓI PHỔ THÔNG -->
+                <div class="carousel-item cyber-card p-6 flex flex-col justify-between border-cyber-neon/30" onclick="selectCard(1)">
+                    <div class="scanner-beam"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-orbitron uppercase tracking-widest text-cyber-neon px-2.5 py-1 rounded-full bg-cyber-neon/10 border border-cyber-neon/30">Tier 02</span>
+                            <i class="fa-solid fa-seedling text-cyber-neon text-lg"></i>
+                        </div>
+                        <h3 class="font-orbitron text-2xl font-bold text-white mb-1">Phổ Thông</h3>
+                        <p class="text-gray-400 text-xs mb-4">Tăng tốc độ load web, xây dựng nền tảng bài viết chuẩn SEO.</p>
+                        
+                        <div class="mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <span class="price-val font-orbitron text-3xl font-extrabold text-cyber-neon" data-monthly="6.500.000" data-yearly="5.200.000">6.500.000</span>
+                            <span class="text-gray-400 text-xs">VNĐ / tháng</span>
+                        </div>
+
+                        <ul class="space-y-2 text-xs text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-neon"></i> <span><strong>Sửa Website:</strong> Tối ưu Mobile Speed</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-neon"></i> <span><strong>Onpage SEO:</strong> Tối ưu 25 trang Landing</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-neon"></i> <span><strong>Backlink:</strong> 50 Backlink Social & Profile</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-neon"></i> <span><strong>Content:</strong> 18 bài SEO (1000 từ)</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-neon"></i> <span><strong>Hình ảnh:</strong> 20 thiết kế Banner</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-neon"></i> <span><strong>Entity:</strong> 30 Social Verification</span></li>
+                        </ul>
+                    </div>
+
+                    <button onclick="openModal('Gói Phổ Thông')" class="mt-4 w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-cyber-neon/10 hover:bg-cyber-neon hover:text-black text-cyber-neon transition duration-300 border border-cyber-neon/40">
+                        CHI TIẾT GÓI
+                    </button>
+                </div>
+
+                <!-- 3. GÓI NÂNG CAO -->
+                <div class="carousel-item cyber-card p-6 flex flex-col justify-between border-cyber-purple/40" onclick="selectCard(2)">
+                    <div class="scanner-beam"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-orbitron uppercase tracking-widest text-cyber-purple px-2.5 py-1 rounded-full bg-cyber-purple/20 border border-cyber-purple/50">Tier 03</span>
+                            <i class="fa-solid fa-rocket text-cyber-purple text-lg"></i>
+                        </div>
+                        <h3 class="font-orbitron text-2xl font-bold text-white mb-1">Nâng Cao</h3>
+                        <p class="text-gray-400 text-xs mb-4">Đột phá thứ hạng từ khóa trung bình - khó, phủ Google Map.</p>
+                        
+                        <div class="mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <span class="price-val font-orbitron text-3xl font-extrabold text-cyber-purple" data-monthly="10.500.000" data-yearly="8.400.000">10.500.000</span>
+                            <span class="text-gray-400 text-xs">VNĐ / tháng</span>
+                        </div>
+
+                        <ul class="space-y-2 text-xs text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-purple"></i> <span><strong>Sửa Website:</strong> Core Web Vitals Audit</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-purple"></i> <span><strong>Onpage SEO:</strong> Schema Structure Pro</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-purple"></i> <span><strong>Backlink:</strong> 100 Backlink Đa tầng</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-purple"></i> <span><strong>Content:</strong> 25 bài Viết Chuyên sâu</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-purple"></i> <span><strong>Entity:</strong> 100+ Trang Tác Giả</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-purple"></i> <span><strong>Google Map:</strong> Tạo & Tối ưu chuẩn SEO</span></li>
+                        </ul>
+                    </div>
+
+                    <button onclick="openModal('Gói Nâng Cao')" class="mt-4 w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-cyber-purple hover:bg-cyber-purple/80 text-white transition duration-300 shadow-lg shadow-cyber-purple/30">
+                        CHI TIẾT GÓI
+                    </button>
+                </div>
+
+                <!-- 4. GÓI CAO CẤP -->
+                <div class="carousel-item cyber-card p-6 flex flex-col justify-between border-cyber-gold/40" onclick="selectCard(3)">
+                    <div class="scanner-beam"></div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-orbitron uppercase tracking-widest text-cyber-gold px-2.5 py-1 rounded-full bg-cyber-gold/10 border border-cyber-gold/40">Tier 04 VIP</span>
+                            <i class="fa-solid fa-crown text-cyber-gold text-lg"></i>
+                        </div>
+                        <h3 class="font-orbitron text-2xl font-bold text-white mb-1">Cao Cấp</h3>
+                        <p class="text-gray-400 text-xs mb-4">Chiếm lĩnh thị trường ngách, phủ sóng truyền thông báo chí.</p>
+                        
+                        <div class="mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <span class="price-val font-orbitron text-3xl font-extrabold text-cyber-gold" data-monthly="16.500.000" data-yearly="13.200.000">16.500.000</span>
+                            <span class="text-gray-400 text-xs">VNĐ / tháng</span>
+                        </div>
+
+                        <ul class="space-y-2 text-xs text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-gold"></i> <span><strong>Sửa Website:</strong> Tối ưu Code + SSL Firewall</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-gold"></i> <span><strong>Backlink:</strong> 200 Backlink + Báo PR</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-gold"></i> <span><strong>Content:</strong> 35 bài Pillar Content</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-gold"></i> <span><strong>Entity:</strong> Phủ 200+ TOP Tier</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-gold"></i> <span><strong>Google Map:</strong> Top Local Rank + Review</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyber-gold"></i> <span><strong>Youtube:</strong> Setup Kênh + 4 Shorts</span></li>
+                        </ul>
+                    </div>
+
+                    <button onclick="openModal('Gói Cao Cấp')" class="mt-4 w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-cyber-gold hover:bg-yellow-400 text-black transition duration-300 shadow-lg shadow-cyber-gold/20">
+                        CHI TIẾT GÓI
+                    </button>
+                </div>
+
+                <!-- 5. GÓI PLUS (BEST SELLER) -->
+                <div class="carousel-item cyber-card p-6 flex flex-col justify-between border-cyber-magenta/60 bg-cyber-magenta/10" onclick="selectCard(4)">
+                    <div class="scanner-beam"></div>
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyber-magenta text-white text-[9px] font-orbitron font-bold py-0.5 px-3 rounded-full uppercase tracking-wider">
+                        ★ BEST SELLER ★
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3 mt-1">
+                            <span class="text-[10px] font-orbitron uppercase tracking-widest text-cyber-magenta px-2.5 py-1 rounded-full bg-cyber-magenta/20 border border-cyber-magenta/50">Tier 05</span>
+                            <i class="fa-solid fa-gem text-cyber-magenta text-xl animate-pulse"></i>
+                        </div>
+                        <h3 class="font-orbitron text-2xl font-bold text-white mb-1 text-glow-magenta">Gói Plus</h3>
+                        <p class="text-gray-300 text-xs mb-4">Tăng trưởng doanh thu đột phá với AI SEO Entity đa quốc gia.</p>
+                        
+                        <div class="mb-4 bg-white/10 p-3 rounded-xl border border-cyber-magenta/30">
+                            <span class="price-val font-orbitron text-3xl font-extrabold text-cyber-magenta text-glow-magenta" data-monthly="25.000.000" data-yearly="20.000.000">25.000.000</span>
+                            <span class="text-gray-300 text-xs">VNĐ / tháng</span>
+                        </div>
+
+                        <ul class="space-y-2 text-xs text-gray-200">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-star text-cyber-magenta"></i> <span><strong>Sửa Website:</strong> Tặng Landingpage 3D</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-star text-cyber-magenta"></i> <span><strong>Backlink:</strong> 400 Backlink VIP Báo Uy Tín</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-star text-cyber-magenta"></i> <span><strong>Content:</strong> 50 bài SEO EEAT AI</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-star text-cyber-magenta"></i> <span><strong>Entity:</strong> Phủ 300+ Nền Tảng Global</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-star text-cyber-magenta"></i> <span><strong>Google Map:</strong> SEO Map Phủ Rộng K Vực</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-star text-cyber-magenta"></i> <span><strong>Youtube:</strong> Dựng Kênh + 8 Video HD</span></li>
+                        </ul>
+                    </div>
+
+                    <button onclick="openModal('Gói Plus')" class="mt-4 w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-gradient-to-r from-cyber-magenta to-cyber-purple text-white transition duration-300 shadow-xl shadow-cyber-magenta/40">
+                        ĐĂNG KÝ NGAY
+                    </button>
+                </div>
+
+                <!-- 6. GÓI PREMIUM -->
+                <div class="carousel-item cyber-card p-6 flex flex-col justify-between border-cyber-cyan/80 bg-cyber-cyan/10" onclick="selectCard(5)">
+                    <div class="scanner-beam"></div>
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyber-cyan text-black text-[9px] font-orbitron font-extrabold py-0.5 px-3 rounded-full uppercase tracking-wider">
+                        ULTIMATE DOMINANCE
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-3 mt-1">
+                            <span class="text-[10px] font-orbitron uppercase tracking-widest text-cyber-cyan px-2.5 py-1 rounded-full bg-cyber-cyan/20 border border-cyber-cyan/50">Tier 06</span>
+                            <i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan text-xl"></i>
+                        </div>
+                        <h3 class="font-orbitron text-2xl font-bold text-white mb-1 text-glow-cyan">Gói Premium</h3>
+                        <p class="text-gray-300 text-xs mb-4">Giải pháp bá chủ ngành, hệ sinh thái 3D Interactive & Media.</p>
+                        
+                        <div class="mb-4 bg-white/10 p-3 rounded-xl border border-cyber-cyan/30">
+                            <span class="price-val font-orbitron text-3xl font-extrabold text-cyber-cyan text-glow-cyan" data-monthly="45.000.000" data-yearly="36.000.000">45.000.000</span>
+                            <span class="text-gray-300 text-xs">VNĐ / tháng</span>
+                        </div>
+
+                        <ul class="space-y-2 text-xs text-gray-200">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan"></i> <span><strong>Sửa Web:</strong> Build Web 3D/Interactive</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan"></i> <span><strong>Backlink:</strong> Mạng Lưới Báo Lớn VnExpress</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan"></i> <span><strong>Content:</strong> 80+ Bài Chuyên Sâu</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan"></i> <span><strong>Entity:</strong> 500+ Entity + Wikipedia</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan"></i> <span><strong>Google Map:</strong> Thống Trị Hàng Loạt Chuỗi</span></li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-cyber-cyan"></i> <span><strong>Youtube:</strong> Trọn Gói Kênh + 15 Video</span></li>
+                        </ul>
+                    </div>
+
+                    <button onclick="openModal('Gói Premium')" class="mt-4 w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-cyber-cyan hover:bg-white text-black transition duration-300 shadow-xl shadow-cyber-cyan/40">
+                        ĐỘC QUYỀN VIP
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: MATRIX COMPARISON TABLE VIEW (Hidden by default) -->
+    <section id="matrix-view-container" class="relative z-10 max-w-7xl mx-auto px-4 my-8 hidden">
+        <div class="cyber-card p-6 overflow-x-auto">
+            <h2 class="font-orbitron text-2xl font-bold text-center text-cyber-cyan mb-6 tracking-wider">
+                <i class="fa-solid fa-table-list mr-2"></i> BẢNG SO SÁNH CHI TIẾT MA TRẬN 6 GÓI
+            </h2>
+
+            <table class="w-full text-left border-collapse min-w-[900px]">
+                <thead>
+                    <tr class="border-b border-cyber-cyan/30 text-xs font-orbitron text-cyber-cyan">
+                        <th class="p-4 w-1/5">HẠNG MỤC DỊCH VỤ</th>
+                        <th class="p-4 text-center">CƠ BẢN</th>
+                        <th class="p-4 text-center">PHỔ THÔNG</th>
+                        <th class="p-4 text-center">NÂNG CAO</th>
+                        <th class="p-4 text-center">CAO CẤP</th>
+                        <th class="p-4 text-center bg-cyber-magenta/10 text-cyber-magenta">PLUS (HOT)</th>
+                        <th class="p-4 text-center">PREMIUM</th>
+                    </tr>
+                </thead>
+                <tbody class="text-xs divide-y divide-white/10">
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-wrench text-cyber-cyan mr-2"></i>Sửa Website</td>
+                        <td class="p-4 text-center text-gray-300">Sửa lỗi UI/UX cơ bản</td>
+                        <td class="p-4 text-center text-gray-300">Tối ưu Mobile & Load Speed</td>
+                        <td class="p-4 text-center text-gray-300">Core Web Vitals Audit</td>
+                        <td class="p-4 text-center text-gray-300">Tối ưu Code + Firewall</td>
+                        <td class="p-4 text-center font-semibold text-cyber-magenta bg-cyber-magenta/5">Tặng Landingpage 3D</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">Build Website 3D độc quyền</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-magnifying-glass text-cyber-cyan mr-2"></i>Onpage SEO</td>
+                        <td class="p-4 text-center text-gray-300">10 trang</td>
+                        <td class="p-4 text-center text-gray-300">25 trang</td>
+                        <td class="p-4 text-center text-gray-300">Schema Structure Pro</td>
+                        <td class="p-4 text-center text-gray-300">Entity Schema VIP</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">SEO AI EEAT Pro</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">Technical SEO 100% Audit</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-link text-cyber-cyan mr-2"></i>Backlink</td>
+                        <td class="p-4 text-center text-gray-300">20 Profile</td>
+                        <td class="p-4 text-center text-gray-300">50 Social & Profile</td>
+                        <td class="p-4 text-center text-gray-300">100 Đa tầng</td>
+                        <td class="p-4 text-center text-gray-300">200 + Báo PR</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">400 Backlink VIP Báo Uy Tín</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">Mạng Lưới Báo Lớn Top 1</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-pen-nib text-cyber-cyan mr-2"></i>Số lượng Content</td>
+                        <td class="p-4 text-center text-gray-300">10 bài (800 từ)</td>
+                        <td class="p-4 text-center text-gray-300">18 bài (1000 từ)</td>
+                        <td class="p-4 text-center text-gray-300">25 bài chuyên sâu</td>
+                        <td class="p-4 text-center text-gray-300">35 bài Pillar Content</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">50 bài chuẩn SEO EEAT</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">80+ bài viết chuyên gia</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-image text-cyber-cyan mr-2"></i>Hình ảnh Graphic</td>
+                        <td class="p-4 text-center text-gray-300">10 hình ảnh</td>
+                        <td class="p-4 text-center text-gray-300">20 banner</td>
+                        <td class="p-4 text-center text-gray-300">30 Infographics</td>
+                        <td class="p-4 text-center text-gray-300">45 thiết kế cao cấp</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">60 độc quyền Visual</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">100+ Visual Art 3D</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-network-wired text-cyber-cyan mr-2"></i>Xây dựng Entity</td>
+                        <td class="p-4 text-center text-gray-600"><i class="fa-solid fa-minus"></i></td>
+                        <td class="p-4 text-center text-gray-300">30 Social Entity</td>
+                        <td class="p-4 text-center text-gray-300">100+ Trang tác giả</td>
+                        <td class="p-4 text-center text-gray-300">200+ Top Tier</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">300+ Phủ Global Entity</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">500+ Entity + Wiki Citation</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-location-dot text-cyber-cyan mr-2"></i>Google Map SEO</td>
+                        <td class="p-4 text-center text-gray-600"><i class="fa-solid fa-minus"></i></td>
+                        <td class="p-4 text-center text-gray-600"><i class="fa-solid fa-minus"></i></td>
+                        <td class="p-4 text-center text-gray-300">Tạo & Tối ưu Map</td>
+                        <td class="p-4 text-center text-gray-300">Top Local Rank + Review</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">SEO Map Phủ Toàn Khu Vực</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">Thống Trị Chuỗi Chi Nhánh</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-brands fa-youtube text-cyber-cyan mr-2"></i>Xây Kênh Youtube</td>
+                        <td class="p-4 text-center text-gray-600"><i class="fa-solid fa-minus"></i></td>
+                        <td class="p-4 text-center text-gray-600"><i class="fa-solid fa-minus"></i></td>
+                        <td class="p-4 text-center text-gray-600"><i class="fa-solid fa-minus"></i></td>
+                        <td class="p-4 text-center text-gray-300">Setup Kênh + 4 Shorts</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">Build Kênh + 8 Video HD</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">Trọn Gói Kênh + 15 Video</td>
+                    </tr>
+                    <tr>
+                        <td class="p-4 font-bold text-white"><i class="fa-solid fa-gift text-cyber-cyan mr-2"></i>Quà Tặng & Bảo Hành</td>
+                        <td class="p-4 text-center text-gray-300">Bảo hành 3 tháng</td>
+                        <td class="p-4 text-center text-gray-300">Bảo hành 6 tháng</td>
+                        <td class="p-4 text-center text-gray-300">Bảo hành 12 tháng</td>
+                        <td class="p-4 text-center text-gray-300">Audit Miễn phí 1 năm</td>
+                        <td class="p-4 text-center text-cyber-magenta font-semibold bg-cyber-magenta/5">Tặng Hosting VIP + SSL 2 năm</td>
+                        <td class="p-4 text-center text-cyber-cyan font-bold">Đồng hành cam kết KPI Doanh thu</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- SECTION 3: INTERACTIVE PRICING CONFIGURATOR / CALCULATOR -->
+    <section class="relative z-10 max-w-5xl mx-auto px-4 my-16">
+        <div class="cyber-card p-8 border-cyber-cyan/40">
+            <div class="text-center mb-8">
+                <span class="text-xs font-orbitron uppercase text-cyber-cyan tracking-widest px-3 py-1 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30">AI PROJECT ESTIMATOR</span>
+                <h2 class="font-orbitron text-2xl sm:text-3xl font-bold text-white mt-3">Dự Toán Chi Phí Dự Án Tự Động</h2>
+                <p class="text-gray-400 text-xs sm:text-sm mt-1">Kéo chọn quy mô dự án để AI tự động đề xuất gói tối ưu nhất cho doanh nghiệp bạn.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between text-xs font-orbitron text-gray-300 mb-2">
+                            <span>SỐ LƯỢNG TỪ KHÓA MỤC TIÊU:</span>
+                            <span id="calc-kw-val" class="text-cyber-cyan font-bold text-base">50 Từ khóa</span>
+                        </div>
+                        <input type="range" id="calc-kw" min="10" max="300" value="50" step="10" class="w-full">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-orbitron text-gray-300 mb-2">
+                            <span>MỤC TIÊU LƯỢNG TRUY CẬP (TRAFFIC/THÁNG):</span>
+                            <span id="calc-traffic-val" class="text-cyber-magenta font-bold text-base">10.000 Traffic</span>
+                        </div>
+                        <input type="range" id="calc-traffic" min="1000" max="100000" value="10000" step="1000" class="w-full">
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-300">
+                            <input type="checkbox" id="calc-map" checked class="accent-cyber-cyan w-4 h-4">
+                            Tích hợp Google Map Local SEO
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-gray-300">
+                            <input type="checkbox" id="calc-ytb" class="accent-cyber-magenta w-4 h-4">
+                            Xây kênh Youtube
+                        </label>
+                    </div>
+                </div>
+
+                <!-- AI Output Suggestion -->
+                <div class="cyber-card p-6 border-cyber-magenta/50 bg-cyber-magenta/10 text-center relative">
+                    <div class="text-xs font-orbitron text-cyber-magenta uppercase tracking-widest mb-2"><i class="fa-solid fa-microchip mr-1"></i> GÓI ĐỀ XUẤT PHÙ HỢP NHẤT</div>
+                    <div id="recommended-package" class="font-orbitron text-3xl font-black text-white text-glow-magenta mb-2">GÓI NÂNG CAO</div>
+                    <p id="recommended-desc" class="text-gray-300 text-xs mb-4">Phù hợp hoàn hảo cho mục tiêu 50 từ khóa và 10.000 Traffic/tháng.</p>
+                    <div id="recommended-price" class="font-orbitron text-2xl font-bold text-cyber-cyan mb-4">10.500.000 VNĐ / tháng</div>
+                    <button id="recommended-btn" onclick="openModal('Gói Nâng Cao')" class="w-full py-3 rounded-xl font-orbitron text-xs font-bold bg-cyber-magenta text-white hover:bg-white hover:text-black transition duration-300 shadow-lg shadow-cyber-magenta/40">
+                        ĐĂNG KÝ GÓI ĐỀ XUẤT
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOLOGRAM CYBER MODAL FOR PACKAGE DETAILS & REGISTRATION -->
+    <div id="cyber-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="cyber-card max-w-xl w-full p-8 border-cyber-cyan relative transform scale-90 transition-transform duration-300" id="modal-content">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-cyber-cyan text-2xl focus:outline-none">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <span class="text-[10px] font-orbitron uppercase text-cyber-cyan tracking-widest">REGISTRATION PROTOCOL</span>
+                <h3 class="font-orbitron text-2xl font-bold text-white mt-1">Đăng Ký Tư Vấn <span id="modal-pkg-name" class="text-cyber-cyan text-glow-cyan">Gói Plus</span></h3>
+                <p class="text-gray-400 text-xs mt-1">Lộ trình triển khai 12 tuần & Cam kết hợp đồng chỉ số KPI rõ ràng.</p>
+            </div>
+
+            <form id="cyberForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-orbitron uppercase text-cyber-cyan mb-1">HỌ VÀ TÊN KHÁCH HÀNG *</label>
+                    <input type="text" required placeholder="Nguyễn Văn A" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyber-cyan transition">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-orbitron uppercase text-cyber-cyan mb-1">SỐ ĐIỆN THOẠI / ZALO *</label>
+                        <input type="tel" required placeholder="0901 234 567" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyber-cyan transition">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-orbitron uppercase text-cyber-cyan mb-1">TÊN WEBSITE / TÊN MIỀN</label>
+                        <input type="text" placeholder="yourcompany.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyber-cyan transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-orbitron uppercase text-cyber-cyan mb-1">GHI CHÚ MỤC TIÊU DỰ ÁN</label>
+                    <textarea rows="3" placeholder="Nhập từ khóa ngành nghề hoặc yêu cầu đặc biệt..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyber-cyan transition"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 rounded-xl font-orbitron text-xs font-bold bg-gradient-to-r from-cyber-cyan via-cyber-magenta to-cyber-purple text-black hover:text-white transition duration-300 shadow-lg shadow-cyber-cyan/30 uppercase tracking-widest">
+                    KÍCH HOẠT TƯ VẤN NGAY
+                </button>
+            </form>
+
+            <div id="modal-success" class="hidden text-center py-8">
+                <i class="fa-solid fa-circle-check text-5xl text-cyber-neon mb-4 animate-bounce"></i>
+                <h4 class="font-orbitron text-xl font-bold text-white mb-2">ĐÃ TIẾP NHẬN YÊU CẦU!</h4>
+                <p class="text-gray-300 text-xs">Hệ thống AI Neural sẽ phân tích Audit website và liên hệ tư vấn trong 15 phút.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT INTERACTIVE ENGINE -->
+    <script>
+        // --- 1. THREE.JS WEBGL BACKGROUND (Sci-Fi Particles & Fluid Mesh) ---
+        const bgCanvas = document.getElementById('webgl-bg');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Create Starfield Particles
+        const particlesCount = 1200;
+        const positions = new Float32Array(particlesCount * 3);
+        const colors = new Float32Array(particlesCount * 3);
+
+        const colorOptions = [new THREE.Color('#00f0ff'), new THREE.Color('#ff007f'), new THREE.Color('#7000ff')];
+
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 20;
+            positions[i + 1] = (Math.random() - 0.5) * 20;
+            positions[i + 2] = (Math.random() - 0.5) * 20;
+
+            const chosenColor = colorOptions[Math.floor(Math.random() * colorOptions.length)];
+            colors[i] = chosenColor.r;
+            colors[i + 1] = chosenColor.g;
+            colors[i + 2] = chosenColor.b;
+        }
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.04,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleSystem);
+
+        camera.position.z = 5;
+
+        // Mouse Parallax Interaction
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
+        });
+
+        function animateWebGL() {
+            requestAnimationFrame(animateWebGL);
+
+            particleSystem.rotation.y += 0.001;
+            particleSystem.rotation.x += 0.0005;
+
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+        animateWebGL();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 2. 3D CAROUSEL ROTATOR LOGIC ---
+        let activeIdx = 0;
+        const totalCards = 6;
+        const rotator = document.getElementById('carousel-rotator');
+        const items = document.querySelectorAll('.carousel-item');
+        const activeIndexEl = document.getElementById('carousel-active-index');
+
+        function updateCarousel() {
+            const angleStep = 360 / totalCards;
+            const radius = window.innerWidth < 640 ? 280 : 420;
+
+            items.forEach((item, index) => {
+                const angle = (index - activeIdx) * angleStep;
+                const radians = (angle * Math.PI) / 180;
+                
+                const x = Math.sin(radians) * radius;
+                const z = Math.cos(radians) * radius - radius;
+                const rotateY = angle;
+
+                if (index === activeIdx) {
+                    item.style.transform = `translate3d(${x}px, 0px, ${z + 120}px) rotateY(${rotateY}deg) scale(1.08)`;
+                    item.style.opacity = '1';
+                    item.style.zIndex = '10';
+                    item.classList.add('border-cyber-cyan');
+                } else {
+                    item.style.transform = `translate3d(${x}px, 0px, ${z}px) rotateY(${rotateY}deg) scale(0.82)`;
+                    item.style.opacity = Math.abs(angle) > 120 ? '0.2' : '0.6';
+                    item.style.zIndex = '1';
+                    item.classList.remove('border-cyber-cyan');
+                }
+            });
+
+            activeIndexEl.innerText = `0${activeIdx + 1}`;
+        }
+
+        function rotateCarousel(dir) {
+            activeIdx = (activeIdx + dir + totalCards) % totalCards;
+            updateCarousel();
+        }
+
+        function selectCard(idx) {
+            activeIdx = idx;
+            updateCarousel();
+        }
+
+        updateCarousel();
+
+        // Keyboard Arrow Controls
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') rotateCarousel(-1);
+            if (e.key === 'ArrowRight') rotateCarousel(1);
+        });
+
+        // --- 3. VIEW MODE SWITCHER (Carousel vs Matrix) ---
+        function switchView(mode) {
+            const carouselContainer = document.getElementById('carousel-view-container');
+            const matrixContainer = document.getElementById('matrix-view-container');
+            const btnCarousel = document.getElementById('btn-carousel-view');
+            const btnMatrix = document.getElementById('btn-matrix-view');
+
+            if (mode === 'carousel') {
+                carouselContainer.classList.remove('hidden');
+                matrixContainer.classList.add('hidden');
+                btnCarousel.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl font-orbitron text-xs sm:text-sm font-bold transition duration-300 text-black bg-cyber-cyan shadow-lg shadow-cyber-cyan/30";
+                btnMatrix.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl font-orbitron text-xs sm:text-sm font-bold transition duration-300 text-gray-400 hover:text-white";
+            } else {
+                carouselContainer.classList.add('hidden');
+                matrixContainer.classList.remove('hidden');
+                btnMatrix.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl font-orbitron text-xs sm:text-sm font-bold transition duration-300 text-black bg-cyber-cyan shadow-lg shadow-cyber-cyan/30";
+                btnCarousel.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl font-orbitron text-xs sm:text-sm font-bold transition duration-300 text-gray-400 hover:text-white";
+            }
+        }
+
+        // --- 4. BILLING TOGGLE (Monthly vs Yearly -20%) ---
+        const billingToggle = document.getElementById('billing-toggle');
+        const toggleCircle = document.getElementById('toggle-circle');
+        const labelMonthly = document.getElementById('label-monthly');
+        const labelYearly = document.getElementById('label-yearly');
+        const priceVals = document.querySelectorAll('.price-val');
+        let isYearly = false;
+
+        function updatePricing() {
+            isYearly = !isYearly;
+            if (isYearly) {
+                toggleCircle.style.transform = 'translateX(24px)';
+                labelYearly.classList.add('text-white', 'bg-cyber-magenta/40');
+                labelYearly.classList.remove('text-gray-400');
+                labelMonthly.classList.remove('text-white', 'bg-cyber-purple/40');
+                labelMonthly.classList.add('text-gray-400');
+
+                priceVals.forEach(el => el.innerText = el.getAttribute('data-yearly'));
+            } else {
+                toggleCircle.style.transform = 'translateX(0px)';
+                labelMonthly.classList.add('text-white', 'bg-cyber-purple/40');
+                labelMonthly.classList.remove('text-gray-400');
+                labelYearly.classList.remove('text-white', 'bg-cyber-magenta/40');
+                labelYearly.classList.add('text-gray-400');
+
+                priceVals.forEach(el => el.innerText = el.getAttribute('data-monthly'));
+            }
+            updateEstimator();
+        }
+
+        billingToggle.addEventListener('click', updatePricing);
+        labelMonthly.addEventListener('click', () => { if(isYearly) updatePricing(); });
+        labelYearly.addEventListener('click', () => { if(!isYearly) updatePricing(); });
+
+        // --- 5. AI PROJECT ESTIMATOR LOGIC ---
+        const kwInput = document.getElementById('calc-kw');
+        const trafficInput = document.getElementById('calc-traffic');
+        const mapInput = document.getElementById('calc-map');
+        const ytbInput = document.getElementById('calc-ytb');
+
+        function updateEstimator() {
+            const kw = parseInt(kwInput.value);
+            const traffic = parseInt(trafficInput.value);
+            
+            document.getElementById('calc-kw-val').innerText = `${kw} Từ khóa`;
+            document.getElementById('calc-traffic-val').innerText = `${traffic.toLocaleString()} Traffic`;
+
+            let pkg = "GÓI CƠ BẢN";
+            let price = isYearly ? "2.800.000" : "3.500.000";
+            let desc = "Phù hợp cho dự án khởi tạo nội dung cơ bản.";
+
+            if (kw > 30 || traffic > 8000) {
+                pkg = "GÓI PHỔ THÔNG";
+                price = isYearly ? "5.200.000" : "6.500.000";
+                desc = "Thích hợp kinh doanh online cần phủ sóng từ khóa vừa.";
+            }
+            if (kw > 60 || traffic > 18000 || mapInput.checked) {
+                pkg = "GÓI NÂNG CAO";
+                price = isYearly ? "8.400.000" : "10.500.000";
+                desc = "Tối ưu cho doanh nghiệp muốn bứt phá thứ hạng & Google Map.";
+            }
+            if (kw > 120 || traffic > 35000 || ytbInput.checked) {
+                pkg = "GÓI CAO CẤP";
+                price = isYearly ? "13.200.000" : "16.500.000";
+                desc = "Đẩy mạnh truyền thông báo chí & Kênh Youtube chuyên nghiệp.";
+            }
+            if (kw > 200 || traffic > 60000) {
+                pkg = "GÓI PLUS (HOT)";
+                price = isYearly ? "20.000.000" : "25.000.000";
+                desc = "Bá chủ ngành hàng với Entity AI Global & Web 3D.";
+            }
+            if (kw >= 280 || traffic >= 90000) {
+                pkg = "GÓI PREMIUM";
+                price = isYearly ? "36.000.000" : "45.000.000";
+                desc = "Hệ sinh thái độc quyền top 1 ngành hàng.";
+            }
+
+            document.getElementById('recommended-package').innerText = pkg;
+            document.getElementById('recommended-price').innerText = `${price} VNĐ / tháng`;
+            document.getElementById('recommended-desc').innerText = desc;
+            document.getElementById('recommended-btn').setAttribute('onclick', `openModal('${pkg}')`);
+        }
+
+        kwInput.addEventListener('input', updateEstimator);
+        trafficInput.addEventListener('input', updateEstimator);
+        mapInput.addEventListener('change', updateEstimator);
+        ytbInput.addEventListener('change', updateEstimator);
+
+        // --- 6. MODAL HANDLERS ---
+        const modal = document.getElementById('cyber-modal');
+        const modalContent = document.getElementById('modal-content');
+        const pkgNameEl = document.getElementById('modal-pkg-name');
+        const form = document.getElementById('cyberForm');
+        const successEl = document.getElementById('modal-success');
+
+        function openModal(pkgName) {
+            pkgNameEl.innerText = pkgName;
+            form.classList.remove('hidden');
+            successEl.classList.add('hidden');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-90');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-90');
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            form.classList.add('hidden');
+            successEl.classList.remove('hidden');
+            setTimeout(() => closeModal(), 2800);
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    </script>
+</body>
+</html>

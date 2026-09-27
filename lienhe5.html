@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Liên Hệ DigitarGroup</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Syncopate & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syncopate:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .font-syncopate {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        /* 3D Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: auto;
+        }
+
+        /* Glassmorphism Hologram Card */
+        .holo-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(30, 41, 59, 0.55) 100%);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(234, 179, 8, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+                        0 0 30px rgba(6, 182, 212, 0.15);
+            transform-style: preserve-3d;
+            transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .holo-card:hover {
+            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.9),
+                        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+                        0 0 45px rgba(234, 179, 8, 0.3);
+        }
+
+        /* Glowing Text Effects */
+        .neon-gold-text {
+            text-shadow: 0 0 12px rgba(234, 179, 8, 0.7),
+                         0 0 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .cyber-input {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .cyber-input:focus {
+            border-color: #eab308;
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.4),
+                        inset 0 0 10px rgba(6, 182, 212, 0.2);
+            outline: none;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        /* 3D Water Drops simulation on glass */
+        .water-drop {
+            position: absolute;
+            background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.8) 0%, rgba(6, 182, 212, 0.3) 40%, rgba(0, 0, 0, 0.6) 100%);
+            border-radius: 50%;
+            box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.8),
+                        inset 2px 2px 6px rgba(255, 255, 255, 0.8),
+                        0 8px 15px rgba(0, 0, 0, 0.5),
+                        0 0 12px rgba(6, 182, 212, 0.6);
+            pointer-events: none;
+            animation: floatDrop 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatDrop {
+            0% { transform: translateY(0px) scale(1) rotate(0deg); }
+            50% { transform: translateY(-10px) scale(1.05) rotate(5deg); }
+            100% { transform: translateY(5px) scale(0.95) rotate(-5deg); }
+        }
+
+        /* Partner Button 3D Neon Glow */
+        .partner-btn {
+            position: relative;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        .partner-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.35), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .partner-btn:hover::before {
+            left: 100%;
+        }
+
+        .partner-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            border-color: #eab308;
+            box-shadow: 0 12px 25px -5px rgba(234, 179, 8, 0.4),
+                        0 0 20px rgba(6, 182, 212, 0.5);
+        }
+
+        /* Submit Button with Wave Ripple */
+        .btn-submit-gold {
+            position: relative;
+            background: linear-gradient(135deg, #eab308 0%, #ca8a04 50%, #06b6d4 100%);
+            background-size: 200% 200%;
+            animation: moveGradient 3s ease infinite;
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.5);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(6, 182, 212, 0.8);
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; border: 1px solid rgba(234, 179, 8, 0.3); }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 md:p-10">
+
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-7xl mx-auto w-full space-y-8 my-auto">
+
+        <!-- Header Title -->
+        <header class="text-center space-y-3">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/40 text-amber-400 text-xs font-semibold tracking-widest uppercase">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+                LIÊN HỆ DigitarGroup
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-extrabold font-syncopate tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-500 to-cyan-400 neon-gold-text">
+                CỔNG LIÊN HỆ & ĐỐI TÁC
+            </h1>
+            <p class="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto font-light">
+                Kết nối trực tiếp thông tin dự án của bạn hoặc khám phá hệ sinh thái đối tác công nghệ chiến lược toàn cầu.
+            </p>
+        </header>
+
+        <!-- 2-COLUMN BALANCED LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- ================= BÊN TRÁI: BIỂU MẪU KHÁCH HÀNG (7 COLUMNS) ================= -->
+            <section id="leftTiltCard" class="lg:col-span-7 holo-card rounded-3xl p-6 sm:p-8 md:p-10 relative overflow-hidden">
+                <!-- 3D Water Drops Accent -->
+                <div class="water-drop w-16 h-16 -top-4 -left-2 opacity-80"></div>
+                <div class="water-drop w-12 h-12 bottom-6 right-8 opacity-70" style="animation-delay: -2s;"></div>
+                
+                <div class="flex items-center justify-between border-b border-amber-500/30 pb-4 mb-6">
+                    <h2 class="text-xl font-bold font-syncopate text-amber-400 flex items-center gap-3">
+                        <i class="fa-solid fa-user-pen text-cyan-400"></i> DÀNH CHO KHÁCH HÀNG
+                    </h2>
+                    <span class="text-xs text-slate-400 font-mono">* Bắt buộc</span>
+                </div>
+
+                <form id="customerForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        
+                        <!-- 1. Tên Công ty / Tổ chức -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-building text-cyan-400"></i> Công Ty / Tổ Chức
+                            </label>
+                            <input type="text" id="company" placeholder="Tên công ty của bạn"
+                                class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm">
+                        </div>
+
+                        <!-- 2. Họ và Tên -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-user text-cyan-400"></i> Họ và Tên <span class="text-pink-500">*</span>
+                            </label>
+                            <input type="text" id="fullname" required placeholder="Nguyễn Văn A"
+                                class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm">
+                        </div>
+
+                        <!-- 3. Ngày tháng năm sinh -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-cake-candles text-cyan-400"></i> Ngày Sinh
+                            </label>
+                            <input type="date" id="dob"
+                                class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm [color-scheme:dark]">
+                        </div>
+
+                        <!-- 4. Số điện thoại -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-phone text-cyan-400"></i> Số Điện Thoại <span class="text-pink-500">*</span>
+                            </label>
+                            <input type="tel" id="phone" required placeholder="090 123 4567" pattern="[0-9\s\+]{9,15}"
+                                class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm">
+                        </div>
+
+                    </div>
+
+                    <!-- 5. Email & 6. Mạng xã hội -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-envelope text-cyan-400"></i> Email Liên Hệ <span class="text-pink-500">*</span>
+                            </label>
+                            <input type="email" id="email" required placeholder="example@domain.com"
+                                class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-share-nodes text-cyan-400"></i> Mạng Xã Hội Khách Hàng
+                            </label>
+                            <input type="url" id="customerSocial" placeholder="https://facebook.com/username..."
+                                class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- 7. Lời nhắn / Yêu cầu hợp tác -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-pen-nib text-cyan-400"></i> Lời Nhắn / Nhu Cầu Hợp Tác
+                        </label>
+                        <textarea id="message" rows="4" placeholder="Nhập chi tiết nội dung cần tư vấn hoặc báo giá..."
+                            class="cyber-input w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm resize-none"></textarea>
+                    </div>
+
+                    <!-- Nút Gửi Thông Tin -->
+                    <button type="submit" id="submitBtn" class="btn-submit-gold w-full py-4 rounded-xl text-slate-950 font-extrabold font-syncopate tracking-widest text-xs sm:text-sm flex items-center justify-center gap-3">
+                        <span>GỬI THÔNG TIN LIÊN HỆ</span>
+                        <i class="fa-solid fa-paper-plane text-slate-950 text-base animate-bounce"></i>
+                    </button>
+                </form>
+            </section>
+
+            <!-- ================= BÊN PHẢI: THÔNG TIN CÔNG TY & 10 DOI TAC (5 COLUMNS) ================= -->
+            <section id="rightTiltCard" class="lg:col-span-5 space-y-6">
+                
+                <!-- Khối Thông Tin Công Ty Chúng Tôi -->
+                <div class="holo-card rounded-3xl p-6 sm:p-8 relative overflow-hidden space-y-5">
+                    <!-- 3D Water Drop -->
+                    <div class="water-drop w-14 h-14 -top-3 -right-3 opacity-80" style="animation-delay: -3.5s;"></div>
+
+                    <div class="border-b border-cyan-500/30 pb-3">
+                        <h2 class="text-xl font-bold font-syncopate text-cyan-400 flex items-center gap-3">
+                            <i class="fa-solid fa-city text-amber-400"></i> THÔNG TIN CÔNG TY
+                        </h2>
+                    </div>
+
+                    <div class="space-y-3.5 text-xs sm:text-sm">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-shield-halved text-amber-400 mt-1 text-base"></i>
+                            <div>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Tên Doanh Nghiệp</p>
+                                <p class="font-bold text-slate-100">CÔNG TY TNHH CÔNG NGHỆ DIGITARGROUP</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-barcode text-cyan-400 mt-1 text-base"></i>
+                            <div>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Mã Số Thuế</p>
+                                <p class="font-mono text-amber-300 font-semibold">0109876543 - Chi cục Thuế Nghệ An</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-location-dot text-pink-400 mt-1 text-base"></i>
+                            <div>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Trụ Sở Chính</p>
+                                <p class="text-slate-200">Tòa nhà Cyber Tower, Xã Quỳnh Phú, Tỉnh Nghệ An</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-headset text-emerald-400 text-base"></i>
+                                <div>
+                                    <p class="text-slate-400 text-[10px] uppercase font-bold">Hotline 24/7</p>
+                                    <p class="font-bold text-emerald-300 text-xs">+84949592677</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-clock text-indigo-400 text-base"></i>
+                                <div>
+                                    <p class="text-slate-400 text-[10px] uppercase font-bold">Giờ Làm Việc</p>
+                                    <p class="text-slate-200 text-xs">T2 - T7: 08:00 - 18:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mạng xã hội của Công ty -->
+                    <div class="pt-3 border-t border-slate-700/50">
+                        <p class="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-2.5">Kênh Truyền Thông Chính Thức</p>
+                        <div class="flex items-center gap-3">
+                            <a href="https://facebook.com" target="_blank" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 flex items-center justify-center text-cyan-400 hover:bg-amber-500 hover:text-slate-950 transition-all hover:scale-110">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                            <a href="https://youtube.com" target="_blank" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 flex items-center justify-center text-pink-500 hover:bg-amber-500 hover:text-slate-950 transition-all hover:scale-110">
+                                <i class="fa-brands fa-youtube"></i>
+                            </a>
+                            <a href="https://zalo.me" target="_blank" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 flex items-center justify-center text-blue-400 hover:bg-amber-500 hover:text-slate-950 transition-all hover:scale-110 font-bold text-xs">
+                                Zalo
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 flex items-center justify-center text-cyan-300 hover:bg-amber-500 hover:text-slate-950 transition-all hover:scale-110">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://tiktok.com" target="_blank" class="w-9 h-9 rounded-xl bg-slate-800 border border-amber-500/30 flex items-center justify-center text-slate-200 hover:bg-amber-500 hover:text-slate-950 transition-all hover:scale-110">
+                                <i class="fa-brands fa-tiktok"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối 10 Button Đối Tác Website -->
+                <div class="holo-card rounded-3xl p-6 relative overflow-hidden space-y-4">
+                    <div class="flex items-center justify-between border-b border-amber-500/30 pb-3">
+                        <h3 class="text-sm font-bold font-syncopate text-amber-300 flex items-center gap-2">
+                            <i class="fa-solid fa-handshake text-cyan-400"></i> 10 ĐỐI TÁC STRATEGIC WEBSITES
+                        </h3>
+                    </div>
+
+                    <!-- Grid 10 Button -->
+                    <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
+                        
+                        <!-- Partner 1 -->
+                        <a href="https://google.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-microchip text-xl text-amber-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-amber-300 truncate">TechCorp Global</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 2 -->
+                        <a href="https://microsoft.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-eye text-xl text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-cyan-300 truncate">CyberVision</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 3 -->
+                        <a href="https://openai.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-atom text-xl text-purple-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-purple-300 truncate">Quantum AI</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 4 -->
+                        <a href="https://aws.amazon.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-cloud text-xl text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-emerald-300 truncate">Nexus Cloud</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 5 -->
+                        <a href="https://nvidia.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-shield-halved text-xl text-amber-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-amber-300 truncate">Vanguard Sol</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 6 -->
+                        <a href="https://apple.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-globe text-xl text-teal-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-teal-300 truncate">EcoSphere Tech</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 7 -->
+                        <a href="https://space.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-shuttle-space text-xl text-pink-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-pink-300 truncate">Astro Dynamics</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 8 -->
+                        <a href="https://meta.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-infinity text-xl text-indigo-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-indigo-300 truncate">Infinity Media</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 9 -->
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-chart-line text-xl text-amber-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-amber-300 truncate">Alpha Ventures</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                        <!-- Partner 10 -->
+                        <a href="https://intel.com" target="_blank" rel="noopener noreferrer" class="partner-btn p-3 rounded-xl flex items-center gap-3 group">
+                            <i class="fa-solid fa-network-wired text-xl text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                            <div class="truncate">
+                                <p class="font-bold text-xs text-slate-100 group-hover:text-cyan-300 truncate">FutureTech Hub</p>
+                                <span class="text-[9px] text-cyan-400 flex items-center gap-1">Website <i class="fa-solid fa-arrow-up-right-from-square text-[7px]"></i></span>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+    <!-- Modal Success Popup -->
+    <div id="statusModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="holo-card p-8 rounded-3xl max-w-sm w-full text-center space-y-4 border border-amber-500/50 transform scale-90 transition-transform duration-300 modal-box">
+            <div class="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500 flex items-center justify-center text-amber-400 text-3xl mx-auto shadow-lg shadow-amber-500/30">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-xl font-bold font-syncopate text-amber-300">GỬI THÀNH CÔNG!</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">Thông tin của quý khách đã được lưu trữ mã hóa an toàn. Chuyên viên của chúng tôi sẽ liên hệ lại trong vòng 24 giờ.</p>
+            <button onclick="closeModal()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-cyan-500 font-extrabold text-slate-950 text-xs tracking-wider uppercase hover:brightness-110">
+                ĐÓN NHẬN
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript logic for Three.js 3D & Tilt Interactions -->
+    <script>
+        let scene, camera, renderer;
+        let waveMesh, particles, waterSpheres = [];
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+
+        function initThreeScene() {
+            const canvas = document.getElementById('bg-canvas');
+
+            // Scene & Fog
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x030712, 0.0016);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3000);
+            camera.position.set(0, 120, 420);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // 1. Sóng nước 3D (Fluid Wave Mesh)
+            const planeGeo = new THREE.PlaneGeometry(1800, 1800, 70, 70);
+            const planeMat = new THREE.MeshBasicMaterial({
+                color: 0x06b6d4,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.22
+            });
+            waveMesh = new THREE.Mesh(planeGeo, planeMat);
+            waveMesh.rotation.x = -Math.PI / 2.2;
+            waveMesh.position.y = -190;
+            scene.add(waveMesh);
+
+            // 2. Magic Floating Particles
+            const particleCount = 1800;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const goldColor = new THREE.Color(0xeab308);
+            const cyanColor = new THREE.Color(0x06b6d4);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                pos[i] = (Math.random() - 0.5) * 2000;
+                pos[i + 1] = (Math.random() - 0.5) * 1400;
+                pos[i + 2] = (Math.random() - 0.5) * 2000;
+
+                const chosenColor = Math.random() > 0.4 ? goldColor : cyanColor;
+                colors[i] = chosenColor.r;
+                colors[i + 1] = chosenColor.g;
+                colors[i + 2] = chosenColor.b;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const pMat = new THREE.PointsMaterial({
+                size: 3.2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geo, pMat);
+            scene.add(particles);
+
+            // 3. Floating 3D Water Drops / Glowing Spheres
+            const sphereGeo = new THREE.SphereGeometry(14, 32, 32);
+            for (let i = 0; i < 22; i++) {
+                const dropMat = new THREE.MeshPhysicalMaterial({
+                    color: i % 2 === 0 ? 0xeab308 : 0x06b6d4,
+                    emissive: i % 2 === 0 ? 0x713f12 : 0x0e7490,
+                    roughness: 0.1,
+                    metalness: 0.1,
+                    transmission: 0.85,
+                    thickness: 1.2,
+                    transparent: true,
+                    opacity: 0.75
+                });
+
+                const sphere = new THREE.Mesh(sphereGeo, dropMat);
+                sphere.position.set(
+                    (Math.random() - 0.5) * 1200,
+                    (Math.random() - 0.5) * 800,
+                    (Math.random() - 0.5) * 900
+                );
+                sphere.userData = {
+                    speedY: Math.random() * 0.25 + 0.1,
+                    rotSpeed: Math.random() * 0.015
+                };
+                waterSpheres.push(sphere);
+                scene.add(sphere);
+            }
+
+            // Events
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousemove', onMouseMove);
+            setup3DTiltEffect();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.04;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.04;
+        }
+
+        // Card Tilt 3D Effect
+        function setup3DTiltEffect() {
+            const leftCard = document.getElementById('leftTiltCard');
+            const rightCard = document.getElementById('rightTiltCard');
+
+            document.addEventListener('mousemove', (e) => {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+                if (leftCard) leftCard.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                if (rightCard) rightCard.style.transform = `rotateY(${xAxis * 0.7}deg) rotateX(${yAxis * 0.7}deg)`;
+            });
+        }
+
+        function animateScene(time) {
+            requestAnimationFrame(animateScene);
+
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+            camera.position.x = targetX * 1.8;
+            camera.position.y = 120 - targetY * 1.8;
+            camera.lookAt(0, 0, 0);
+
+            // Animate wave grid
+            if (waveMesh) {
+                const pos = waveMesh.geometry.attributes.position;
+                for (let i = 0; i < pos.count; i++) {
+                    const u = pos.getX(i);
+                    const v = pos.getY(i);
+                    const z = Math.sin(u * 0.018 + time * 0.002) * 16 + Math.cos(v * 0.018 + time * 0.002) * 16;
+                    pos.setZ(i, z);
+                }
+                pos.needsUpdate = true;
+            }
+
+            // Particles
+            if (particles) {
+                particles.rotation.y = time * 0.00015;
+            }
+
+            // Water Spheres
+            waterSpheres.forEach(drop => {
+                drop.position.y += drop.userData.speedY;
+                drop.rotation.x += drop.userData.rotSpeed;
+                if (drop.position.y > 450) drop.position.y = -450;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> <span>ĐANG MÃ HOÁ VÀ GỬI...</span>`;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+
+                const modal = document.getElementById('statusModal');
+                const box = modal.querySelector('.modal-box');
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                box.classList.remove('scale-90');
+                box.classList.add('scale-100');
+
+                document.getElementById('customerForm').reset();
+            }, 1200);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('statusModal');
+            const box = modal.querySelector('.modal-box');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-90');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        window.onload = function() {
+            initThreeScene();
+            animateScene(0);
+        };
+    </script>
+</body>
+</html>
