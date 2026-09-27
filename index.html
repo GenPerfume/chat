@@ -1006,14 +1006,73 @@
         .br-opts label { display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
         .br-opts input[type=checkbox] { accent-color: #a855f7; cursor: pointer; }
         .br-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        /* === NÚT BẤM 3D GIỌT NƯỚC === */
         .br-btn {
-            border: none; padding: 9px 14px; border-radius: 9px;
-            font-weight: 700; font-size: 12px; cursor: pointer; color: #fff;
+            position: relative;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 12.5px;
+            cursor: pointer;
+            color: #fff;
+            outline: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            overflow: hidden;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
-        .br-btn-add { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 3px 0 #064e3b; }
-        .br-btn-run { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 3px 0 #1e3a8a; padding: 9px 18px; }
-        .br-btn-copy { background: linear-gradient(135deg, #8b5cf6, #7c3aed); box-shadow: 0 3px 0 #4c1d95; }
-        .br-btn-cleartext { background: linear-gradient(135deg, #64748b, #475569); box-shadow: 0 3px 0 #334155; }
+        .br-btn::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 10%;
+            width: 80%;
+            height: 35%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.05));
+            border-radius: 20px 20px 10px 10px;
+            pointer-events: none;
+        }
+        .br-btn-add {
+            background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #047857 100%);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4), inset 0 -3px 4px rgba(0,0,0,0.3);
+        }
+        .br-btn-add:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6), inset 0 -3px 4px rgba(0,0,0,0.3);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .br-btn-run {
+            background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4), inset 0 -3px 4px rgba(0,0,0,0.3);
+            padding: 10px 20px;
+        }
+        .br-btn-run:hover {
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6), inset 0 -3px 4px rgba(0,0,0,0.3);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .br-btn-copy {
+            background: linear-gradient(180deg, #c084fc 0%, #a855f7 50%, #7e22ce 100%);
+            box-shadow: 0 6px 15px rgba(168, 85, 247, 0.4), inset 0 -3px 4px rgba(0,0,0,0.3);
+        }
+        .br-btn-copy:hover {
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.6), inset 0 -3px 4px rgba(0,0,0,0.3);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .br-btn-cleartext {
+            background: linear-gradient(180deg, #94a3b8 0%, #64748b 50%, #334155 100%);
+            box-shadow: 0 6px 15px rgba(100, 116, 139, 0.4), inset 0 -3px 4px rgba(0,0,0,0.3);
+        }
+        .br-btn-cleartext:hover {
+            box-shadow: 0 8px 20px rgba(100, 116, 139, 0.6), inset 0 -3px 4px rgba(0,0,0,0.3);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .br-btn:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 2px 4px rgba(0,0,0,0.4);
+        }
         .br-hint {
             font-size: 11px; color: #94a3b8; margin: 0 0 10px; line-height: 1.45;
             padding: 8px 10px; background: rgba(168,85,247,0.08);
@@ -1038,8 +1097,42 @@
         .br-field input:focus, .br-field textarea:focus { border-color: #a855f7; }
         .br-field textarea { min-height: 48px; }
         .br-del {
-            background: #ef4444; color: #fff; border: none;
-            width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-weight: 700; align-self: end;
+            position: relative;
+            background: linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%);
+            color: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 700;
+            align-self: end;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4), inset 0 -2px 3px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        }
+        .br-del::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 15%;
+            width: 70%;
+            height: 35%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.65), rgba(255,255,255,0.05));
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        .br-del:hover {
+            transform: scale(1.08) rotate(90deg);
+            box-shadow: 0 6px 15px rgba(239, 68, 68, 0.6);
+        }
+        .br-del:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 2px 3px rgba(0,0,0,0.35);
         }
         .br-ws-head {
             display: flex; justify-content: space-between; align-items: center;
@@ -1061,11 +1154,40 @@
         #brMainText:focus { border-color: #a855f7; }
         .br-extra { margin: 10px 0 0; font-size: 12px; color: #94a3b8; }
         .br-extra button {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-            color: #e2e8f0; padding: 6px 12px; border-radius: 8px; cursor: pointer;
-            font-size: 12px; margin-right: 4px;
+            position: relative;
+            background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 50%, #5b21b6 100%);
+            border: none;
+            color: #fff;
+            padding: 7px 14px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35), inset 0 -2px 3px rgba(0,0,0,0.25);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            transition: all 0.2s;
         }
-        .br-extra button:hover { background: #7c3aed; border-color: #7c3aed; }
+        .br-extra button::before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 12%;
+            width: 76%;
+            height: 40%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.05));
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        .br-extra button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.5), inset 0 -2px 3px rgba(0,0,0,0.25);
+        }
+        .br-extra button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35), inset 0 2px 3px rgba(0,0,0,0.3);
+        }
 
         .cta-menu-item.cta-item-geo:hover {
             background: rgba(56, 189, 248, 0.12);
@@ -1843,8 +1965,7 @@
                     </div>
                     <textarea id="brMainText" placeholder="Dán văn bản..."></textarea>
                     <div class="br-extra">
-                        Công cụ HTML nhanh:
-                        <button id="pBtn" type="button">Mở &lt;p&gt;</button>
+                        <button id="pBtn" type="button">&lt;p&gt;</button>
                         <button id="brCopyWidth" type="button">Width</button>
                         <button id="brCopyHeight" type="button">Height</button>
                         <span id="toastNotice" style="color:#4ade80;font-weight:bold;display:none;margin-left:6px">✓ Đã copy!</span>
@@ -2868,11 +2989,11 @@ window.showReplaceTool = function () {
     if (!isTagOpen) {
       insertText = "<" + tag + ">";
       isTagOpen = true;
-      if (btn) btn.innerHTML = "Đóng &lt;/" + tag + "&gt;";
+      if (btn) btn.innerHTML = "&lt;/" + tag + "&gt;";
     } else {
       insertText = "</" + tag + ">";
       isTagOpen = false;
-      if (btn) btn.innerHTML = "Mở &lt;" + tag + "&gt;";
+      if (btn) btn.innerHTML = "&lt;" + tag + "&gt;";
     }
     textarea.value = text.substring(0, start) + insertText + text.substring(start);
     textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
