@@ -398,6 +398,26 @@
             background: #0a1022;
         }
 
+        #tool-pricing-panel,
+        #tool-contact-panel {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+            padding: 0;
+            min-height: 0;
+        }
+        #tool-pricing-panel.active,
+        #tool-contact-panel.active { display: flex; }
+        #tool-pricing-panel iframe,
+        #tool-contact-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 0 0 22px 22px;
+            background: #0a1022;
+        }
+
         .chat-view-hidden { display: none !important; }
 
         .jpg-tool-box {
@@ -1397,13 +1417,24 @@
                     </div>
                 </div>
 
-                <div class="magnetic-wrap" data-glow-start="rgba(245, 158, 11, 0.55)" data-glow-end="rgba(234, 179, 8, 0.65)" data-glow-aura="rgba(245, 158, 11, 0.5)" data-laser="#eab308">
+                <div class="magnetic-wrap" data-glow-start="rgba(245, 158, 11, 0.55)" data-glow-end="rgba(234, 179, 8, 0.65)" data-glow-aura="rgba(245, 158, 11, 0.5)" data-laser="#eab308" onclick="window.showPricing()">
                     <div class="laser-border-beam"></div>
                     <div class="menu-item-card px-4 py-2 cursor-pointer">
                         <div class="light-streak"></div>
                         <div class="content-layer-3d flex items-center gap-2">
                             <i class="fa-solid fa-gem icon-pop-3d text-amber-400 text-xs"></i>
                             <span class="text-xs font-bold text-slate-100 tracking-wide">Bảng Giá</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="magnetic-wrap" data-glow-start="rgba(34, 197, 94, 0.55)" data-glow-end="rgba(16, 185, 129, 0.65)" data-glow-aura="rgba(34, 197, 94, 0.5)" data-laser="#22c55e" onclick="window.showContact()">
+                    <div class="laser-border-beam"></div>
+                    <div class="menu-item-card px-4 py-2 cursor-pointer">
+                        <div class="light-streak"></div>
+                        <div class="content-layer-3d flex items-center gap-2">
+                            <i class="fa-solid fa-headset icon-pop-3d text-green-400 text-xs"></i>
+                            <span class="text-xs font-bold text-slate-100 tracking-wide">Liên hệ</span>
                         </div>
                     </div>
                 </div>
@@ -1464,7 +1495,8 @@
             <a href="#" onclick="window.showChatView(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-comments text-indigo-400"></i> Chat AI</a>
             <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-microchip text-cyan-400"></i> Công Cụ AI</a>
             <a href="#" onclick="window.showSolutions(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-layer-group text-pink-400"></i> Giải Pháp</a>
-            <a href="#" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-gem text-amber-400"></i> Bảng Giá</a>
+            <a href="#" onclick="window.showPricing(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-gem text-amber-400"></i> Bảng Giá</a>
+            <a href="#" onclick="window.showContact(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-headset text-green-400"></i> Liên hệ</a>
             <a href="#" onclick="window.showJpgTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-image text-red-400"></i> Chuyển ảnh JPG</a>
             <a href="#" onclick="window.showTextTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-font text-purple-400"></i> Chuyển dạng chữ</a>
             <a href="#" onclick="window.showGeoTool(); return false;" class="px-3 py-2 rounded-xl bg-white/5 flex items-center gap-2.5 text-xs text-slate-200"><i class="fa-solid fa-map-location-dot text-sky-400"></i> Geotag Maps</a>
@@ -1526,6 +1558,28 @@
                     id="solution-frame"
                     src="https://genperfume.github.io/chat/DigitalGroup.html"
                     title="Giải Pháp DigitalGroup"
+                    allow="clipboard-write; fullscreen"
+                    loading="lazy">
+                </iframe>
+            </div>
+
+            <!-- BẢNG GIÁ -->
+            <div id="tool-pricing-panel">
+                <iframe
+                    id="pricing-frame"
+                    src="https://genperfume.github.io/chat/bang-gia.html"
+                    title="Bảng Giá"
+                    allow="clipboard-write; fullscreen"
+                    loading="lazy">
+                </iframe>
+            </div>
+
+            <!-- LIÊN HỆ -->
+            <div id="tool-contact-panel">
+                <iframe
+                    id="contact-frame"
+                    src="https://genperfume.github.io/chat/lienhe.html"
+                    title="Liên hệ"
                     allow="clipboard-write; fullscreen"
                     loading="lazy">
                 </iframe>
@@ -2045,7 +2099,7 @@ function closeMobileMenu() {
 }
 
 function hideAllTools() {
-    var ids = ['tool-jpg-panel', 'tool-text-panel', 'tool-geo-panel', 'tool-replace-panel', 'tool-solution-panel'];
+    var ids = ['tool-jpg-panel', 'tool-text-panel', 'tool-geo-panel', 'tool-replace-panel', 'tool-solution-panel', 'tool-pricing-panel', 'tool-contact-panel'];
     ids.forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.classList.remove('active');
@@ -2088,6 +2142,16 @@ window.showChatView = function () {
 window.showSolutions = function () {
     showToolPanel('tool-solution-panel', '🧩 Giải Pháp',
         '<i class="fa-solid fa-layer-group text-pink-400 mr-1"></i> DigitalGroup');
+};
+
+window.showPricing = function () {
+    showToolPanel('tool-pricing-panel', '💎 Bảng Giá',
+        '<i class="fa-solid fa-gem text-amber-400 mr-1"></i> Pricing');
+};
+
+window.showContact = function () {
+    showToolPanel('tool-contact-panel', '📞 Liên hệ',
+        '<i class="fa-solid fa-headset text-green-400 mr-1"></i> Contact');
 };
 
 window.showJpgTool = function () {
