@@ -1152,6 +1152,32 @@
             white-space: pre-wrap; font-family: ui-monospace, monospace;
         }
         #brMainText:focus { border-color: #a855f7; }
+        .br-textarea-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .br-center-toast {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.92);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(16, 185, 129, 0.55);
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .br-center-toast.show {
+            opacity: 1;
+        }
         .br-extra { margin: 10px 0 0; font-size: 12px; color: #94a3b8; }
         .br-extra button {
             position: relative;
@@ -1960,7 +1986,10 @@
                             <button class="br-btn br-btn-cleartext" id="brClearAll" type="button">Xóa tất cả</button>
                         </div>
                     </div>
-                    <textarea id="brMainText" placeholder="Dán văn bản..."></textarea>
+                    <div class="br-textarea-wrap">
+                        <textarea id="brMainText" placeholder="Dán văn bản..."></textarea>
+                        <div id="brCenterToast" class="br-center-toast">✓ Đã copy!</div>
+                    </div>
                     <div class="br-extra">
                         <button id="pBtn" type="button">&lt;p&gt;</button>
                         <button id="brCopyWidth" type="button">Width</button>
@@ -2975,6 +3004,17 @@ window.showReplaceTool = function () {
     setTimeout(function () { notice.style.display = "none"; }, 1000);
   }
 
+  var brToastTimer = null;
+  function showCenterToast() {
+    var toast = $("brCenterToast");
+    if (!toast) return;
+    clearTimeout(brToastTimer);
+    toast.classList.add("show");
+    brToastTimer = setTimeout(function () {
+      toast.classList.remove("show");
+    }, 1000);
+  }
+
   var isTagOpen = false;
   function toggleTag(tag) {
     var textarea = $("brMainText");
@@ -3126,12 +3166,14 @@ window.showReplaceTool = function () {
       if (!ta || !ta.value) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(ta.value).then(function () {
-          alert("Đã sao chép!");
+          showCenterToast();
+        }).catch(function () {
+          ta.select();
+          try { document.execCommand("copy"); showCenterToast(); } catch (err) {}
         });
       } else {
         ta.select();
-        document.execCommand("copy");
-        alert("Đã sao chép!");
+        try { document.execCommand("copy"); showCenterToast(); } catch (err) {}
       }
     };
 
