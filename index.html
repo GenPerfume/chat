@@ -2848,212 +2848,197 @@ window.showReplaceTool = function () {
 <script>
 /* ===== FIND & REPLACE LOGIC ===== */
 (function () {
+  function $(id) { return document.getElementById(id); }
+
   function showNotice() {
-    var notice = document.getElementById('toastNotice');
+    var notice = $("toastNotice");
     if (!notice) return;
-    notice.style.display = 'inline';
-    setTimeout(function() { notice.style.display = 'none'; }, 1000);
+    notice.style.display = "inline";
+    setTimeout(function () { notice.style.display = "none"; }, 1000);
   }
 
   var isTagOpen = false;
   function toggleTag(tag) {
-    var textarea = document.getElementById('brMainText');
-    var btn = document.getElementById('pBtn');
+    var textarea = $("brMainText");
+    var btn = $("pBtn");
     if (!textarea) return;
     var start = textarea.selectionStart;
     var text = textarea.value;
-    var insertText = '';
+    var insertText = "";
     if (!isTagOpen) {
-      insertText = '<' + tag + '>';
+      insertText = "<" + tag + ">";
       isTagOpen = true;
-      if (btn) btn.innerHTML = 'Đóng &lt;/' + tag + '&gt;';
+      if (btn) btn.innerHTML = "Đóng &lt;/" + tag + "&gt;";
     } else {
-      insertText = '</' + tag + '>';
+      insertText = "</" + tag + ">";
       isTagOpen = false;
-      if (btn) btn.innerHTML = 'Mở &lt;' + tag + '&gt;';
+      if (btn) btn.innerHTML = "Mở &lt;" + tag + "&gt;";
     }
     textarea.value = text.substring(0, start) + insertText + text.substring(start);
     textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
     textarea.focus();
   }
 
-  function qs(sel, root){ return (root || document).querySelector(sel); }
-  function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-
-  function esc(s){
-    var special = '.*+?^${}()|[]\\';
-    var out = '';
-    for (var i = 0; i < s.length; i++) {
-      var ch = s.charAt(i);
-      if (special.indexOf(ch) !== -1) out += '\\' + ch;
-      else out += ch;
-    }
-    return out;
+  function escapeRe(s) {
+    return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
-  function splitTerms(raw){
-    if (raw == null || raw === '') return [];
+  function splitTerms(raw) {
+    if (raw == null || raw === "") return [];
     if (/^\s+$/.test(raw)) return [raw];
     var parts = raw.split(/[\n,|]+/);
     var out = [];
     for (var i = 0; i < parts.length; i++) {
       var t = parts[i];
-      if (t.length && /^\s+$/.test(t)) { out.push(t); continue; }
-      t = t.replace(/^\s+|\s+$/g, '');
-      if (t !== '') out.push(t);
+      if (t.length > 0 && /^\s+$/.test(t)) {
+        out.push(t);
+        continue;
+      }
+      t = t.replace(/^\s+|\s+$/g, "");
+      if (t !== "") out.push(t);
     }
     return out;
   }
 
-  function tidy(text){
-    text = text.replace(/[ \t]{2,}/g, ' ');
-    text = text.replace(/[ \t]+([,.;:!?])/g, '$1');
-    text = text.replace(/[ \t]+\>/g, '>');
-    text = text.replace(/<([a-zA-Z0-9]+)((?:\s+[a-zA-Z_:][-a-zA-Z0-9_:.]*\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*))*)\s*>/g, function(m, name, attrs){
-      if (!attrs || !attrs.replace(/\s/g, '')) return '<' + name + '>';
-      attrs = attrs.replace(/[ \t]{2,}/g, ' ').replace(/^[ \t]+|[ \t]+$/g, '');
-      return '<' + name + (attrs ? ' ' + attrs : '') + '>';
-    });
-    text = text.replace(/[ \t]+\>/g, '>');
-    var lines = text.split(String.fromCharCode(10));
-    for (var i = 0; i < lines.length; i++) {
-      lines[i] = lines[i].replace(/^[ \t]+|[ \t]+$/g, '');
-    }
-    text = lines.join(String.fromCharCode(10));
-    text = text.replace(/[ \t]{2,}/g, ' ');
+  function tidyHtmlSpaces(text) {
+    text = text.replace(/[ \t]{2,}/g, " ");
+    text = text.replace(/[ \t]+>/g, ">");
+    text = text.replace(/<\/[ \t]+/g, "</");
+    text = text.replace(/[ \t]+\n/g, "\n");
+    text = text.replace(/\n[ \t]+/g, "\n");
     return text;
   }
 
-  function doReplace(){
-    var ta = document.getElementById('brMainText');
-    var stats = document.getElementById('brStats');
+  function processReplace() {
+    var ta = $("brMainText");
+    var stats = $("brStats");
     if (!ta) return;
     var text = ta.value;
-    if (!text) { if (stats) stats.textContent = 'Lượt: 0'; return; }
+    if (!text) {
+      if (stats) stats.textContent = "Lượt: 0";
+      return;
+    }
 
-    var matchCase = !!(document.getElementById('brMatchCase') || {}).checked;
-    var wholeWord = !!(document.getElementById('brWholeWord') || {}).checked;
-    var useRegex = !!(document.getElementById('brUseRegex') || {}).checked;
-    var finds = qsa('.br-find');
-    var reps = qsa('.br-replace');
+    var matchCase = $("brMatchCase") && $("brMatchCase").checked;
+    var wholeWord = $("brWholeWord") && $("brWholeWord").checked;
+    var useRegex = $("brUseRegex") && $("brUseRegex").checked;
+    var finds = document.querySelectorAll(".br-find");
+    var reps = document.querySelectorAll(".br-replace");
     var total = 0;
 
     for (var i = 0; i < finds.length; i++) {
-      var raw = finds[i].value || '';
+      var raw = finds[i].value || "";
       var terms = splitTerms(raw);
-      if (!terms.length && raw !== '') terms = [raw];
-      terms.sort(function(a, b){ return b.length - a.length; });
-      var rep = reps[i] ? (reps[i].value || '') : '';
+      if (terms.length === 0 && raw !== "") terms = [raw];
+      terms.sort(function (a, b) { return b.length - a.length; });
+      var rep = reps[i] ? reps[i].value : "";
 
       for (var j = 0; j < terms.length; j++) {
         var term = terms[j];
-        if (term === '') continue;
+        if (term === "") continue;
         try {
-          var flags = 'g';
-          if (!matchCase) flags += 'i';
-          var pat = useRegex ? term : esc(term);
+          var flags = matchCase ? "g" : "gi";
+          var pat = useRegex ? term : escapeRe(term);
           if (!pat) continue;
-          if (wholeWord && term.replace(/\s/g, '') !== '') {
-            pat = '(?:^|\\s)' + pat + '(?=\\s|$)';
+          if (wholeWord && term.replace(/\s/g, "") !== "") {
+            pat = "\\b" + pat + "\\b";
           }
           var re = new RegExp(pat, flags);
           var m = text.match(re);
           if (m) total += m.length;
-          if (wholeWord && term.replace(/\s/g, '') !== '' && rep === '') {
-            text = text.replace(re, function(matched){
-              return /^\s/.test(matched) ? ' ' : '';
-            });
-          } else {
-            text = text.replace(re, rep);
-          }
-        } catch (err) {
-          console.error(err);
+          text = text.replace(re, rep);
+        } catch (e) {
+          console.error(e);
         }
       }
     }
 
-    text = tidy(text);
+    text = tidyHtmlSpaces(text);
     ta.value = text;
-    if (stats) stats.textContent = 'Lượt: ' + total;
+    if (stats) stats.textContent = "Lượt: " + total;
   }
 
-  function addRule(){
-    var list = document.getElementById('brRulesList');
+  function removeRule(btn) {
+    var list = $("brRulesList");
     if (!list) return;
-    var div = document.createElement('div');
-    div.className = 'br-rule';
-    div.innerHTML = '<div class="br-field"><label>Tìm</label><textarea class="br-find" rows="2" placeholder="từ1, từ2"></textarea></div>' +
-      '<div class="br-field"><label>Thay bằng (trống = xóa)</label><input type="text" class="br-replace" placeholder="Để trống nếu muốn xóa"/></div>' +
-      '<button class="br-del" type="button">X</button>';
-    list.appendChild(div);
-    var btn = div.querySelector('.br-del');
-    if (btn) btn.onclick = function(){ removeRule(btn); };
-  }
-
-  function removeRule(btn){
-    var list = document.getElementById('brRulesList');
-    if (!list) return;
-    if (qsa('.br-rule').length > 1) {
-      var row = btn.parentElement;
+    if (list.querySelectorAll(".br-rule").length > 1) {
+      var row = btn.closest ? btn.closest(".br-rule") : btn.parentElement;
       if (row) row.remove();
     }
   }
 
-  function bind(){
-    var root = document.getElementById('brApp');
-    if (!root || root.getAttribute('data-br-bound') === '1') return;
-    var exec = document.getElementById('brExecute');
+  function addRule() {
+    var list = $("brRulesList");
+    if (!list) return;
+    var div = document.createElement("div");
+    div.className = "br-rule";
+    div.innerHTML =
+      '<div class="br-field"><label>Tìm</label><textarea class="br-find" rows="2" placeholder="từ1, từ2"></textarea></div>' +
+      '<div class="br-field"><label>Thay bằng (trống = xóa)</label><input type="text" class="br-replace" placeholder="Để trống nếu muốn xóa"/></div>' +
+      '<button class="br-del" type="button">X</button>';
+    list.appendChild(div);
+    var delBtn = div.querySelector(".br-del");
+    if (delBtn) delBtn.onclick = function () { removeRule(delBtn); };
+  }
+
+  function bind() {
+    var root = $("brApp");
+    if (!root || root.getAttribute("data-br-bound") === "1") return;
+    var exec = $("brExecute");
     if (!exec) return;
-    root.setAttribute('data-br-bound', '1');
+    root.setAttribute("data-br-bound", "1");
 
-    var addBtn = document.getElementById('brAddRule');
-    if (addBtn) addBtn.onclick = function(e){ e.preventDefault(); addRule(); };
-    exec.onclick = function(e){ e.preventDefault(); doReplace(); };
+    var addBtn = $("brAddRule");
+    if (addBtn) addBtn.onclick = function (e) { e.preventDefault(); addRule(); };
+    exec.onclick = function (e) { e.preventDefault(); processReplace(); };
 
-    var clearBtn = document.getElementById('brClearAll');
-    if (clearBtn) clearBtn.onclick = function(e){
+    var clearBtn = $("brClearAll");
+    if (clearBtn) clearBtn.onclick = function (e) {
       e.preventDefault();
-      var ta = document.getElementById('brMainText');
-      var stats = document.getElementById('brStats');
-      if (ta) ta.value = '';
-      if (stats) stats.textContent = 'Lượt: 0';
+      var ta = $("brMainText");
+      var stats = $("brStats");
+      if (ta) ta.value = "";
+      if (stats) stats.textContent = "Lượt: 0";
     };
 
-    var copyBtn = document.getElementById('brCopy');
-    if (copyBtn) copyBtn.onclick = function(e){
+    var copyBtn = $("brCopy");
+    if (copyBtn) copyBtn.onclick = function (e) {
       e.preventDefault();
-      var ta = document.getElementById('brMainText');
+      var ta = $("brMainText");
       if (!ta || !ta.value) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(ta.value).then(function(){ alert('Đã sao chép!'); });
+        navigator.clipboard.writeText(ta.value).then(function () {
+          alert("Đã sao chép!");
+        });
       } else {
         ta.select();
-        document.execCommand('copy');
-        alert('Đã sao chép!');
+        document.execCommand("copy");
+        alert("Đã sao chép!");
       }
     };
 
-    var del0 = document.getElementById('brDel0');
-    if (del0) del0.onclick = function(){ removeRule(del0); };
+    var del0 = $("brDel0");
+    if (del0) del0.onclick = function () { removeRule(del0); };
 
-    var pBtn = document.getElementById('pBtn');
-    if (pBtn) pBtn.onclick = function(){ toggleTag('p'); };
-    var wBtn = document.getElementById('brCopyWidth');
-    if (wBtn) wBtn.onclick = function(){
+    var pBtn = $("pBtn");
+    if (pBtn) pBtn.onclick = function () { toggleTag("p"); };
+    var wBtn = $("brCopyWidth");
+    if (wBtn) wBtn.onclick = function () {
       if (navigator.clipboard) navigator.clipboard.writeText('width="800px"').then(showNotice);
     };
-    var hBtn = document.getElementById('brCopyHeight');
-    if (hBtn) hBtn.onclick = function(){
+    var hBtn = $("brCopyHeight");
+    if (hBtn) hBtn.onclick = function () {
       if (navigator.clipboard) navigator.clipboard.writeText('height="600px"').then(showNotice);
     };
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
   else bind();
   setTimeout(bind, 500);
   setTimeout(bind, 1500);
 })();
 </script>
+
 
 
 <script>
