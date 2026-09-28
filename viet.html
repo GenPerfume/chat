@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Kỹ Thuật Viết Content SEO | Spatial 3D Edition</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Be Vietnam Pro (Việt hóa cực đẹp & chuẩn), Inter, Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700;800&family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* 1. KHAI BÁO FONT FTV VIP MOSSETA CỦA BẠN TẠI ĐÂY (Thay đường dẫn url tương ứng) */
+        @font-face {
+            font-family: 'FTV VIP Mosseta';
+            src: url('FTV-VIP-Mosseta.woff2') format('woff2'),
+                 url('FTV-VIP-Mosseta.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            /* Ưu tiên Mosseta -> Be Vietnam Pro -> Sans-serif */
+            --font-display: 'FTV VIP Mosseta', 'Be Vietnam Pro', sans-serif;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', monospace;
+
+            /* Palette Obsidian & Titanium Glow */
+            --bg-dark: #030407;
+            --glass-card: rgba(18, 22, 34, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --accent-gold: #fbbf24;
+            --accent-cyan: #38bdf8;
+        }
+
+        * {
+            font-family: var(--font-sans);
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Áp dụng font Heading */
+        h1, h2, h3, h4, .font-display, .section-title { 
+            font-family: var(--font-display) !important; 
+            letter-spacing: -0.01em;
+        }
+        
+        .font-mono { font-family: var(--font-mono); }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+            letter-spacing: -0.01em;
+        }
+
+        /* Article Glass Cards */
+        .glass-article-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.08) inset;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-article-card:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030407; }
+        ::-webkit-scrollbar-thumb { 
+            background: #334155; 
+            border-radius: 4px; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+        }
+
+        /* Section Headings Styling */
+        .section-title {
+            color: #ffffff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .highlight-gold {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        p, li {
+            color: #cbd5e1;
+        }
+
+        strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen relative flex flex-col justify-between">
+
+    <!-- REAL-TIME PARTICLE & FLUID MESH CANVAS -->
+    <canvas id="particle-fluid-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- HERO SECTION SHOWCASE -->
+    <main class="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center z-10 relative">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 text-slate-300 text-xs font-mono mb-6 tracking-wide">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Viết Bài Chuẩn SEO</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-6 leading-tight">
+            Bài Viết Chuẩn SEO Trong <br/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400">
+                Kỷ Nguyên Tìm Kiếm Hiện Đại
+            </span>
+        </h1>
+
+        <p class="text-slate-300 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed font-normal">
+            Phân tích chuyên sâu về kỹ thuật, kiến trúc và cấu trúc viết bài content chuẩn SEO đáp ứng các tiêu chuẩn thuật toán tìm kiếm AI mới nhất.
+        </p>
+    </main>
+
+    <!-- MAIN ARTICLE CONTENT CONTAINER -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 z-10 relative space-y-10 pb-24 text-base">
+
+        <!-- MỞ BÀI GIỚI THIỆU -->
+        <section class="glass-article-card p-6 sm:p-10">
+            <p class="text-slate-200 text-lg leading-relaxed">
+                Bài viết chuẩn SEO trong kỷ nguyên tìm kiếm hiện đại (với sự lên ngôi của các thuật toán AI như Google Helpful Content, EEAT, MUM và Search Generative Experience) <strong class="text-white">không còn là việc "nhồi nhét từ khóa"</strong> hay làm theo các công thức rập khuôn cũ.
+            </p>
+            <p class="text-slate-300 mt-4 leading-relaxed">
+                Dưới đây là hướng dẫn chi tiết về kỹ thuật, kiến trúc và cấu trúc viết bài content chuẩn SEO đáp ứng các tiêu chuẩn thuật toán mới nhất.
+            </p>
+        </section>
+
+        <!-- PHẦN 1: THUẬT TOÁN & TƯ DUY SEO CONTENT MỚI NHẤT -->
+        <section id="thuat-toan" class="glass-article-card p-6 sm:p-10 space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 01</span>
+                <h2 class="section-title text-2xl sm:text-3xl mt-1">
+                    <i class="fa-solid fa-brain text-slate-300 text-xl"></i>
+                    1. Thuật toán & Tư duy SEO Content mới nhất
+                </h2>
+            </div>
+
+            <p class="text-slate-200">
+                Để bài viết rank top bền vững, bạn cần nắm rõ <strong class="highlight-gold">3 nguyên tắc nền tảng</strong> trong cách Google đánh giá nội dung hiện nay:
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+                <!-- Nguyên tắc 1 -->
+                <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all">
+                    <div class="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300 font-mono font-bold text-xs mb-3">01</div>
+                    <h3 class="font-bold text-white text-lg mb-2">E-E-A-T System</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Google ưu tiên trải nghiệm thực tế (Experience) của tác giả. Bài viết cần thể hiện góc nhìn cá nhân, hình ảnh/video thực tế thay vì chỉ tổng hợp thông tin chung chung.
+                    </p>
+                </div>
+
+                <!-- Nguyên tắc 2 -->
+                <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all">
+                    <div class="w-8 h-8 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-sky-300 font-mono font-bold text-xs mb-3">02</div>
+                    <h3 class="font-bold text-white text-lg mb-2">Helpful Content</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Đánh giá xem nội dung có tạo giá trị cho người dùng hay thao túng search engine. Nội dung AI phải được biên tập tỉ mỉ, có chiều sâu và giải quyết triệt để vấn đề.
+                    </p>
+                </div>
+
+                <!-- Nguyên tắc 3 -->
+                <div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all">
+                    <div class="w-8 h-8 rounded-lg bg-purple-400/10 border border-purple-400/30 flex items-center justify-center text-purple-300 font-mono font-bold text-xs mb-3">03</div>
+                    <h3 class="font-bold text-white text-lg mb-2">Search Intent</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Mọi kỹ thuật SEO vô nghĩa nếu không thỏa mãn nhu cầu thực sự của người dùng khi tìm kiếm (Informational, Commercial, Transactional, Navigational).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHẦN 2: KIẾN TRÚC & CẤU TRÚC BÀI VIẾT -->
+        <section id="kien-truc" class="glass-article-card p-6 sm:p-10 space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 02</span>
+                <h2 class="section-title text-2xl sm:text-3xl mt-1">
+                    <i class="fa-solid fa-sitemap text-slate-300 text-xl"></i>
+                    2. Kiến trúc & Cấu trúc bài viết (Article Architecture)
+                </h2>
+            </div>
+
+            <p class="text-slate-200">
+                Kiến trúc bài viết giúp cả người đọc lẫn Googlebot dễ dàng cào dữ liệu (crawl) và hiểu ngữ cảnh bài viết.
+            </p>
+
+            <!-- TREE ARCHITECTURE VISUALIZATION -->
+            <div class="p-6 rounded-2xl bg-black/50 border border-white/10 font-mono text-xs sm:text-sm text-slate-300 overflow-x-auto leading-relaxed tracking-wide">
+                <div class="text-amber-300 font-semibold">[Title Tag (Thẻ tiêu đề SEO)]</div>
+                <div class="pl-4">└── [Meta Description]</div>
+                <div class="pl-8 text-sky-300 font-semibold">└── [H1: Tiêu đề chính trên trang]</div>
+                <div class="pl-14">├── [Sapo / Intro]</div>
+                <div class="pl-14 text-emerald-300">├── [H2: Luận điểm chính 1]</div>
+                <div class="pl-20">│ ├── [H3: Ý phụ 1.1]</div>
+                <div class="pl-20">│ └── [H3: Ý phụ 1.2]</div>
+                <div class="pl-14 text-emerald-300">├── [H2: Luận điểm chính 2]</div>
+                <div class="pl-20">│ ├── [H3: Ý phụ 2.1]</div>
+                <div class="pl-24">│ │ ├── [H4: Chi tiết 2.1.1]</div>
+                <div class="pl-24">│ │ └── [H4: Chi tiết 2.1.2]</div>
+                <div class="pl-20">│ └── [H3: Ý phụ 2.2]</div>
+                <div class="pl-14 text-emerald-300">└── [H2: Kết luận & Call to Action]</div>
+            </div>
+
+            <h3 class="text-xl font-bold text-white pt-4 border-t border-white/10">Quy tắc triển khai các thẻ Heading (H1 - H6)</h3>
+
+            <div class="space-y-4">
+                <div class="p-5 rounded-xl bg-white/[0.02] border-l-4 border-amber-400 pl-5">
+                    <h4 class="font-bold text-white text-base">H1 (Tiêu đề chính của bài viết):</h4>
+                    <ul class="list-disc list-inside text-slate-300 text-sm mt-2 space-y-1.5">
+                        <li><strong class="text-amber-300">Duy nhất:</strong> Mỗi bài viết chỉ được phép có 1 thẻ H1.</li>
+                        <li><strong class="text-amber-300">Nội dung:</strong> Chứa từ khóa chính (ưu tiên nằm ở vị trí càng gần đầu càng tốt).</li>
+                        <li><strong class="text-amber-300">Độ dài:</strong> Tốt nhất dưới 60-70 ký tự để hiển thị trọn vẹn trên di động.</li>
+                    </ul>
+                </div>
+
+                <div class="p-5 rounded-xl bg-white/[0.02] border-l-4 border-sky-400 pl-5">
+                    <h4 class="font-bold text-white text-base">H2 (Các phần/chủ đề lớn):</h4>
+                    <p class="text-slate-300 text-sm mt-1">
+                        Đóng vai trò như các chương trong cuốn sách. Mỗi bài nên có từ 2 - 5 thẻ H2. Nên chứa các từ khóa phụ, từ khóa LSI hoặc ngữ cảnh liên quan.
+                    </p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-white/[0.02] border-l-4 border-emerald-400 pl-5">
+                    <h4 class="font-bold text-white text-base">H3 (Các ý chi tiết bổ trợ cho H2):</h4>
+                    <p class="text-slate-300 text-sm mt-1">
+                        Được bọc bên trong H2. Không bao giờ xuất hiện H3 khi chưa có H2 đứng trước. Dùng để chia nhỏ ý giúp bài viết dễ đọc, tránh các khối chữ lớn.
+                    </p>
+                </div>
+
+                <div class="p-5 rounded-xl bg-white/[0.02] border-l-4 border-purple-400 pl-5">
+                    <h4 class="font-bold text-white text-base">H4 - H6 (Chi tiết nhỏ, ví dụ, danh mục con):</h4>
+                    <p class="text-slate-300 text-sm mt-1">
+                        Dùng cho bài viết sâu (In-depth content) hoặc phân loại phức tạp. Tránh lạm dụng H5, H6 để không làm rối cấu trúc (DOM structure) của trang.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHẦN 3: TỐI ƯU KỸ THUẬT CHI TIẾT -->
+        <section id="on-page" class="glass-article-card p-6 sm:p-10 space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 03</span>
+                <h2 class="section-title text-2xl sm:text-3xl mt-1">
+                    <i class="fa-solid fa-code text-slate-300 text-xl"></i>
+                    3. Quy tắc tối ưu kỹ thuật chi tiết (On-Page Technical SEO)
+                </h2>
+            </div>
+
+            <!-- 3.1 & 3.2 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                    <h3 class="font-bold text-amber-300 text-lg">3.1. Title Tag & Meta Description</h3>
+                    <p class="text-slate-300 text-sm">
+                        <strong class="text-white">Title Tag:</strong> Chứa từ khóa chính + yếu tố thu hút (con số, năm, tính từ mạnh). Độ dài lý tưởng: 50 – 60 ký tự (~580px).
+                    </p>
+                    <p class="text-slate-300 text-sm">
+                        <strong class="text-white">Meta Description:</strong> Đoạn tóm tắt thu hút chứa từ khóa chính, từ đồng nghĩa và CTA. Độ dài lý tưởng: 110 – 155 ký tự.
+                    </p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                    <h3 class="font-bold text-sky-300 text-lg">3.2. Đoạn mở bài (Sapo / Intro)</h3>
+                    <p class="text-slate-300 text-sm">
+                        <strong class="text-white">Quy tắc 100 từ đầu tiên:</strong> Từ khóa chính bắt buộc xuất hiện tự nhiên trong 100-150 từ đầu.
+                    </p>
+                    <p class="text-slate-300 text-sm">
+                        <strong class="text-white">Công thức APP:</strong>
+                        <br/>• <strong class="text-amber-300">Agree:</strong> Đưa ra vấn đề tạo sự đồng cảm.
+                        <br/>• <strong class="text-amber-300">Promise:</strong> Hứa hẹn giải pháp bài viết cung cấp.
+                        <br/>• <strong class="text-amber-300">Preview:</strong> Tóm tắt những gì họ sẽ học được.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3.3, 3.4 & 3.5 -->
+            <div class="space-y-4 pt-2">
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                    <h3 class="font-bold text-emerald-300 text-lg mb-2">3.3. Mật độ từ khóa & Ngữ cảnh Semantic (LSI / Entity SEO)</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        • <strong class="text-white">Mật độ từ khóa (Keyword Density):</strong> Duy trì ở mức <strong>0.8% - 1.5%</strong>. Tuyệt đối không cố nhồi nhét.
+                        <br/>• <strong class="text-white">Ngữ cảnh (NLP & Entity):</strong> Google dựa vào NLP để hiểu bài viết. Bổ sung cụm từ liên quan chuyên sâu ngành. <em>Ví dụ: Nếu viết về "SEO Content", các từ bổ trợ cần có là Search Intent, Backlink, Internal Link, Googlebot, Index, CTR, Organic Traffic...</em>
+                    </p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                    <h3 class="font-bold text-purple-300 text-lg mb-2">3.4. Liên kết nội bộ (Internal Link) & Liên kết ngoài (Outbound Link)</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        • <strong class="text-white">Internal Link:</strong> Chèn 2 - 4 liên kết trỏ đến các bài viết cùng chủ đề để tạo cấu trúc cụm chủ đề (Topic Cluster / Hub-Spoke). Dùng Anchor text tự nhiên.
+                        <br/>• <strong class="text-white">Outbound Link:</strong> Chèn 1 - 2 liên kết trỏ đến các nguồn uy tín, chính thống (nghiên cứu, tài liệu chính thức Google) để gia tăng độ uy tín (Trust).
+                    </p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                    <h3 class="font-bold text-rose-300 text-lg mb-2">3.5. Hình ảnh & Đa phương tiện (Media)</h3>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        • <strong class="text-white">Thẻ Alt (Alt Text):</strong> Tất cả hình ảnh phải có thẻ alt chứa từ khóa hoặc mô tả nội dung ảnh.
+                        <br/>• <strong class="text-white">Tên file ảnh:</strong> Không dấu, gạch nối giữa các từ (ví dụ: <code class="text-amber-300 font-mono px-1.5 py-0.5 rounded bg-black/40 border border-white/10">cau-truc-content-seo.jpg</code>).
+                        <br/>• <strong class="text-white">Định dạng & Dung lượng:</strong> Dùng định dạng thế hệ mới (<strong>.webp</strong>) và nén dưới <strong>150KB</strong> để tối ưu tốc độ tải trang (Core Web Vitals).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHẦN 4: BẢNG CHECKLIST TRƯỚC KHU XUẤT BẢN -->
+        <section id="checklist" class="glass-article-card p-6 sm:p-10 space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 04</span>
+                <h2 class="section-title text-2xl sm:text-3xl mt-1">
+                    <i class="fa-solid fa-list-check text-slate-300 text-xl"></i>
+                    4. Bảng kiểm tra nhanh (Checklist) trước khi xuất bản
+                </h2>
+            </div>
+
+            <!-- TABLE -->
+            <div class="overflow-x-auto rounded-2xl border border-white/10">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-white/10 border-b border-white/10 text-amber-300">
+                            <th class="p-4 font-bold text-base">Hạng mục</th>
+                            <th class="p-4 font-bold text-base">Tiêu chuẩn kỹ thuật</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-slate-300">
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">URL</td>
+                            <td class="p-4">Ngắn gọn, chứa từ khóa chính, không dấu, ngăn cách bằng dấu -</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Title</td>
+                            <td class="p-4">50–60 ký tự, chứa từ khóa chính ở đầu</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Meta Description</td>
+                            <td class="p-4">110–155 ký tự, có CTA và từ khóa</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Heading</td>
+                            <td class="p-4">1 H1 duy nhất, phân tầng logic H2 -&gt; H3 -&gt; H4</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Mở bài</td>
+                            <td class="p-4">Chứa từ khóa chính trong 100 từ đầu tiên</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Mật độ từ khóa</td>
+                            <td class="p-4">0.8% – 1.5%, sử dụng từ đồng nghĩa/LSI</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Hình ảnh</td>
+                            <td class="p-4">Có thẻ Alt, đuôi .webp, dung lượng &lt; 150KB</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Liên kết</td>
+                            <td class="p-4">Có tối thiểu 2 Internal Links và 1 Outbound Link uy tín</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.02]">
+                            <td class="p-4 font-semibold text-white">Khả năng đọc</td>
+                            <td class="p-4">Đoạn văn không quá 3-4 dòng, có bullet point/bảng biểu để ngắt nhịp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JAVASCRIPT ENGINE (PARTICLE MESH CANVAS) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('particle-fluid-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            let mouse = { x: -1000, y: -1000, vx: 0, vy: 0, lastX: 0, lastY: 0 };
+
+            function resizeCanvas() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            window.addEventListener('mousemove', (e) => {
+                mouse.vx = e.clientX - mouse.lastX;
+                mouse.vy = e.clientY - mouse.lastY;
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.lastX = e.clientX;
+                mouse.lastY = e.clientY;
+            });
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * 0.8;
+                    this.vy = (Math.random() - 0.5) * 0.8;
+                    this.radius = Math.random() * 2 + 1;
+                    this.baseAlpha = Math.random() * 0.4 + 0.1;
+                    this.alpha = this.baseAlpha;
+                }
+
+                update() {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const maxDist = 180;
+
+                    if (dist < maxDist) {
+                        const force = (1 - dist / maxDist) * 2;
+                        const angle = Math.atan2(dy, dx);
+                        this.vx -= Math.cos(angle) * force * 0.5;
+                        this.vy -= Math.sin(angle) * force * 0.5;
+                        this.alpha = Math.min(0.9, this.baseAlpha + force * 0.5);
+                    } else {
+                        this.alpha += (this.baseAlpha - this.alpha) * 0.05;
+                    }
+
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    this.vx *= 0.96;
+                    this.vy *= 0.96;
+
+                    if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                        this.reset();
+                    }
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < 110; i++) {
+                particles.push(new Particle());
+            }
+
+            window.addEventListener('click', (e) => {
+                for (let i = 0; i < 20; i++) {
+                    const p = new Particle();
+                    p.x = e.clientX;
+                    p.y = e.clientY;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 7 + 2;
+                    p.vx = Math.cos(angle) * speed;
+                    p.vy = Math.sin(angle) * speed;
+                    p.radius = Math.random() * 3 + 1.5;
+                    p.baseAlpha = 0.9;
+                    particles.push(p);
+                }
+                if (particles.length > 200) {
+                    particles.splice(0, 20);
+                }
+            });
+
+            function renderCanvas() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 110) {
+                            ctx.save();
+                            ctx.globalAlpha = (1 - dist / 110) * 0.15;
+                            ctx.strokeStyle = '#FFFFFF';
+                            ctx.lineWidth = 0.8;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(renderCanvas);
+            }
+            renderCanvas();
+        });
+    </script>
+</body>
+</html>

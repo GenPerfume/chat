@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lập Trình Trong SEO (Technical & Engineering SEO)</title>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Google Fonts: Be Vietnam Pro, Inter, Fira Code -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700;800&family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* Khai báo Font FTV VIP Mosseta */
+@font-face {
+font-family: 'FTV VIP Mosseta';
+src: url('fonts/FTV-VIP-Mosseta.woff2') format('woff2'),
+url('fonts/FTV-VIP-Mosseta.ttf') format('truetype');
+font-weight: normal;
+font-style: normal;
+font-display: swap;
+}
+
+:root {
+--font-display: 'FTV VIP Mosseta', 'Be Vietnam Pro', sans-serif;
+--font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+--font-mono: 'Fira Code', monospace;
+
+--bg-dark: #030407;
+--glass-card: rgba(18, 22, 34, 0.65);
+--glass-border: rgba(255, 255, 255, 0.12);
+--accent-gold: #fbbf24;
+--accent-cyan: #38bdf8;
+--accent-emerald: #34d399;
+}
+
+* {
+font-family: var(--font-sans);
+box-sizing: border-box;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, .font-display, .section-title {
+font-family: var(--font-display) !important;
+letter-spacing: -0.01em;
+}
+
+.font-mono { font-family: var(--font-mono); }
+
+body {
+background-color: var(--bg-dark);
+color: #f8fafc;
+overflow-x: hidden;
+margin: 0;
+padding: 0;
+line-height: 1.8;
+letter-spacing: -0.01em;
+}
+
+/* Glassmorphism Card Style */
+.glass-article-card {
+background: var(--glass-card);
+backdrop-filter: blur(25px) saturate(180%);
+-webkit-backdrop-filter: blur(25px) saturate(180%);
+border: 1px solid var(--glass-border);
+border-radius: 24px;
+box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.08) inset;
+transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-article-card:hover {
+border-color: rgba(255, 255, 255, 0.25);
+box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #030407; }
+::-webkit-scrollbar-thumb {
+background: #334155;
+border-radius: 4px;
+border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.section-title {
+color: #ffffff;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.highlight-gold {
+color: var(--accent-gold);
+font-weight: 600;
+}
+
+p, li {
+color: #cbd5e1;
+}
+
+strong {
+color: #ffffff;
+font-weight: 600;
+}
+</style>
+</head>
+
+<body class="min-h-screen relative flex flex-col justify-between">
+
+<!-- REAL-TIME PARTICLE & FLUID MESH CANVAS -->
+<canvas id="particle-fluid-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+<!-- HEADER / HERO SECTION -->
+<main class="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center z-10 relative">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 text-slate-300 text-xs font-mono mb-6 tracking-wide">
+<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+<span>Technical & Engineering SEO</span>
+</div>
+
+<h1 class="text-3xl sm:text-5xl font-extrabold text-white mb-6 leading-tight">
+Lập Trình Trong SEO <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-slate-200 to-amber-300">
+(Technical & Engineering SEO)
+</span>
+</h1>
+</main>
+
+<!-- ARTICLE CONTENT CONTAINER -->
+<div class="max-w-4xl mx-auto px-4 sm:px-6 z-10 relative space-y-10 pb-24 text-base">
+
+<!-- GIỚI THIỆU -->
+<section class="glass-article-card p-6 sm:p-10">
+<p class="text-slate-200 text-lg leading-relaxed">
+<strong class="text-white">Lập trình trong SEO (Technical & Engineering SEO)</strong> là việc ứng dụng tư duy khoa học máy tính, kỹ thuật lập trình và quản trị hệ thống để tối ưu hóa khả năng thu thập dữ liệu (crawling), lập chỉ mục (indexing) và nâng cao hiệu năng hiển thị của website trên các công cụ tìm kiếm.
+</p>
+<p class="text-slate-300 mt-4 leading-relaxed">
+Khác với On-page Content thông thường, Lập trình trong SEO can thiệp trực tiếp vào <strong class="highlight-gold">mã nguồn, kiến trúc dữ liệu và hạ tầng máy chủ</strong>.
+</p>
+</section>
+
+<!-- PHẦN 1: LỰA CHỌN MÃ NGUỒN -->
+<section id="cms-framework" class="glass-article-card p-6 sm:p-10 space-y-6">
+<div class="border-b border-white/10 pb-4">
+<span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 01</span>
+<h2 class="section-title text-2xl sm:text-3xl mt-1">
+<i class="fa-solid fa-layer-group text-slate-300 text-xl"></i>
+1. Lựa chọn Mã nguồn (CMS/Framework) tối ưu SEO
+</h2>
+</div>
+
+<p class="text-slate-200">
+Mã nguồn quyết định cách website rendering (dựng hình) nội dung và cách Bot Google tiếp cận dữ liệu.
+</p>
+
+<div class="space-y-4 pt-2">
+<div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all">
+<h3 class="font-bold text-amber-300 text-lg mb-2">
+<i class="fa-brands fa-wordpress mr-2"></i>WordPress
+</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+Lựa chọn tốt nhất cho phần lớn website. Kiến trúc mã nguồn mở, hỗ trợ sẵn cấu trúc URL thân thiện, dễ can thiệp vào <code class="text-sky-300 font-mono px-1.5 py-0.5 bg-black/40 rounded">functions.php</code>, <code class="text-sky-300 font-mono px-1.5 py-0.5 bg-black/40 rounded">.htaccess</code> và hệ sinh thái plugin hỗ trợ quản lý Schema, Sitemap, Redirects sâu.
+</p>
+</div>
+
+<div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all">
+<h3 class="font-bold text-sky-300 text-lg mb-2">
+<i class="fa-solid fa-code-branch mr-2"></i>Next.js / Nuxt.js (Node.js Frameworks)
+</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+Lựa chọn hàng đầu cho các ứng dụng web hiện đại (SPA/PWA). Điểm quan trọng nhất khi dùng các framework này là phải triển khai <strong class="text-white">SSR (Server-Side Rendering)</strong> hoặc <strong class="text-white">SSG (Static Site Generation)</strong>. Tránh phụ thuộc hoàn toàn vào Client-Side Rendering (CSR) vì Googlebot sẽ tốn thời gian chạy Javascript Execution Queue, làm giảm tốc độ Index.
+</p>
+</div>
+
+<div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all">
+<h3 class="font-bold text-emerald-300 text-lg mb-2">
+<i class="fa-solid fa-terminal mr-2"></i>Custom Code (PHP, Python, Go...)
+</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+Cho phép tối ưu dung lượng mã nguồn nhẹ nhất, loại bỏ hoàn toàn mã thừa (bloatware). Tuy nhiên, lập trình viên phải tự xây dựng toàn bộ cơ chế tạo Sitemap, cấu trúc Metadata, Canonical, và Router chuẩn SEO.
+</p>
+</div>
+</div>
+</section>
+
+<!-- PHẦN 2: THÀNH PHẦN MÃ NGUỒN CẦN CHỈNH SỬA -->
+<section id="rendering-dom" class="glass-article-card p-6 sm:p-10 space-y-6">
+<div class="border-b border-white/10 pb-4">
+<span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 02</span>
+<h2 class="section-title text-2xl sm:text-3xl mt-1">
+<i class="fa-solid fa-sliders text-slate-300 text-xl"></i>
+2. Các thành phần Mã nguồn cần chỉnh sửa & Tối ưu
+</h2>
+</div>
+
+<!-- A. Rendering & DOM -->
+<div class="space-y-4">
+<h3 class="text-xl font-bold text-white border-l-4 border-amber-400 pl-3">A. Tối ưu Rendering & DOM Structure</h3>
+<ul class="list-disc list-inside space-y-2 text-slate-300 text-sm pl-2">
+<li><strong class="text-white">Tối ưu DOM Tree:</strong> Giữ độ sâu của DOM tree dưới 32 cấp và tổng số phần tử DOM dưới 1.500 node để giảm thời gian parse HTML của trình duyệt và Googlebot.</li>
+<li><strong class="text-white">Cấu trúc Semantic HTML5:</strong> Bắt buộc dùng đúng các thẻ ngữ nghĩa:
+<div class="mt-2 text-xs font-mono text-amber-300 bg-black/40 p-2.5 rounded-lg border border-white/10 inline-block">
+&lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;article&gt;, &lt;section&gt;, &lt;aside&gt;, &lt;footer&gt;
+</div>
+</li>
+<li><strong class="text-white">Thẻ Heading:</strong> Tuân thủ thứ tự bậc cấp: <code class="text-sky-300 font-mono">&lt;h1&gt; &rarr; &lt;h2&gt; &rarr; &lt;h3&gt;</code>. Không dùng CSS để biến các thẻ <code class="text-slate-400 font-mono">&lt;div&gt;</code> hay <code class="text-slate-400 font-mono">&lt;span&gt;</code> thành Heading.</li>
+</ul>
+</div>
+
+<!-- B. Core Web Vitals -->
+<div class="space-y-4 pt-4 border-t border-white/10">
+<h3 class="text-xl font-bold text-white border-l-4 border-sky-400 pl-3">B. Tối ưu Tải trang & Core Web Vitals (LCP, INP, CLS)</h3>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+<div class="p-5 rounded-xl bg-white/[0.02] border border-white/10">
+<h4 class="font-bold text-amber-300 text-base mb-2">LCP (Largest Contentful Paint)</h4>
+<ul class="text-xs text-slate-300 space-y-2">
+<li>• Preload các tài nguyên quan trọng ở <code class="text-sky-300 font-mono">&lt;head&gt;</code>:
+<br/><code class="text-emerald-300 font-mono text-[11px]">&lt;link rel="preload" href="hero-image.webp" as="image"&gt;</code>
+</li>
+<li>• Áp dụng <code class="text-sky-300 font-mono">fetchpriority="high"</code> cho hình ảnh chính/LCP.</li>
+<li>• Sử dụng CSS <code class="text-sky-300 font-mono">font-display: swap</code> để tránh hiện tượng ẩn văn bản khi chờ nạp font (FOIT).</li>
+</ul>
+</div>
+
+<div class="p-5 rounded-xl bg-white/[0.02] border border-white/10">
+<h4 class="font-bold text-sky-300 text-base mb-2">INP (Interaction to Next Paint)</h4>
+<ul class="text-xs text-slate-300 space-y-2">
+<li>• Chia nhỏ các Long Tasks thành các đoạn mã chạy bất đồng bộ bằng <code class="text-sky-300 font-mono">requestAnimationFrame()</code> hoặc <code class="text-sky-300 font-mono">setTimeout()</code>.</li>
+<li>• Tránh các thao tác làm nghẽn Main-thread trong Javascript.</li>
+</ul>
+</div>
+
+<div class="p-5 rounded-xl bg-white/[0.02] border border-white/10">
+<h4 class="font-bold text-purple-300 text-base mb-2">CLS (Cumulative Layout Shift)</h4>
+<ul class="text-xs text-slate-300 space-y-2">
+<li>• Luôn khai báo thuộc tính <code class="text-sky-300 font-mono">width</code> và <code class="text-sky-300 font-mono">height</code> rõ ràng cho thẻ <code class="text-amber-300 font-mono">&lt;img&gt;</code> và <code class="text-amber-300 font-mono">&lt;iframe&gt;</code>.</li>
+<li>• Sử dụng thuộc tính CSS <code class="text-sky-300 font-mono">aspect-ratio</code> hoặc reserve không gian trống cho quảng cáo/banner động bằng CSS.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PHẦN 3: NGÔN NGỮ LẬP TRÌNH & VAI TRÒ -->
+<section id="languages" class="glass-article-card p-6 sm:p-10 space-y-6">
+<div class="border-b border-white/10 pb-4">
+<span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 03</span>
+<h2 class="section-title text-2xl sm:text-3xl mt-1">
+<i class="fa-solid fa-code text-slate-300 text-xl"></i>
+3. Ngôn ngữ Lập trình & Vai trò cụ thể trong SEO
+</h2>
+</div>
+
+<div class="overflow-x-auto rounded-2xl border border-white/10">
+<table class="w-full text-left border-collapse text-sm">
+<thead>
+<tr class="bg-white/10 border-b border-white/10 text-amber-300">
+<th class="p-4 font-bold text-base w-1/4">Ngôn ngữ</th>
+<th class="p-4 font-bold text-base w-1/3">Vai trò chính trong kỹ thuật SEO</th>
+<th class="p-4 font-bold text-base">Ứng dụng cụ thể</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5 text-slate-300">
+<tr class="hover:bg-white/[0.02]">
+<td class="p-4 font-semibold text-white font-mono">HTML5 & CSS3</td>
+<td class="p-4">Cấu trúc dữ liệu hiển thị & Hiệu năng</td>
+<td class="p-4 text-xs">Semantic Markup, Critical CSS inline, Asynchronous CSS loading, Responsive Design.</td>
+</tr>
+<tr class="hover:bg-white/[0.02]">
+<td class="p-4 font-semibold text-sky-300 font-mono">JavaScript</td>
+<td class="p-4">Điều khiển Rendering & Động hóa</td>
+<td class="p-4 text-xs">Xử lý Hydration trong SSR, Lazy-loading media, Dynamic Rendering, Tối ưu hóa tập tin .js (Minify, Tree-shaking).</td>
+</tr>
+<tr class="hover:bg-white/[0.02]">
+<td class="p-4 font-semibold text-emerald-300 font-mono">PHP / Python / Node.js</td>
+<td class="p-4">Xử lý Server-side & Tự động hóa</td>
+<td class="p-4 text-xs">Xử lý Redirects (301/302), Cấu hình HTTP Headers, Tự động khởi tạo Dynamic XML Sitemap, Bật Server Caching.</td>
+</tr>
+<tr class="hover:bg-white/[0.02]">
+<td class="p-4 font-semibold text-amber-300 font-mono">SQL</td>
+<td class="p-4">Quản trị Cơ sở dữ liệu</td>
+<td class="p-4 text-xs">Tối ưu hóa truy vấn Query, Đánh chỉ mục Index Database để tăng tốc độ phản hồi Server (TTFB &lt; 0.8s).</td>
+</tr>
+<tr class="hover:bg-white/[0.02]">
+<td class="p-4 font-semibold text-rose-300 font-mono">RegEx / Bash Script</td>
+<td class="p-4">Quản trị Hệ thống & Phân tích</td>
+<td class="p-4 text-xs">Rewrite URL, Cấu hình file Nginx/Apache, Phân tích file Server Log (Log File Analysis).</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- PHẦN 4: ĐOẠN CODE KĨ THUẬT THỰC CHIẾN -->
+<section id="code-snippets" class="glass-article-card p-6 sm:p-10 space-y-6">
+<div class="border-b border-white/10 pb-4">
+<span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 04</span>
+<h2 class="section-title text-2xl sm:text-3xl mt-1">
+<i class="fa-solid fa-laptop-code text-slate-300 text-xl"></i>
+4. Các đoạn Code Kỹ thuật Tối ưu SEO Thực chiến
+</h2>
+</div>
+
+<!-- CODE A -->
+<div class="space-y-2">
+<h3 class="font-bold text-amber-300 text-lg">A. Dynamic XML Sitemap & Robots.txt (Server-Side)</h3>
+<p class="text-slate-300 text-sm">
+File <code class="text-sky-300 font-mono">robots.txt</code> điều hướng bot, trong khi XML Sitemap khai báo cấu trúc đường dẫn. Cấu hình file <code class="text-sky-300 font-mono">.htaccess</code> (Apache Server) để xử lý Redirect 301 chuẩn SEO:
+</p>
+<div class="rounded-xl bg-black/70 border border-white/10 p-4 font-mono text-xs sm:text-sm text-emerald-300 overflow-x-auto">
+<pre><code># Redirect HTTP sang HTTPS và WWW sang Non-WWW
+RewriteEngine On
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://domain.com/$1 [L,R=301]</code></pre>
+</div>
+</div>
+
+<!-- CODE B -->
+<div class="space-y-2 pt-4">
+<h3 class="font-bold text-sky-300 text-lg">B. Structured Data Markup (JSON-LD)</h3>
+<p class="text-slate-300 text-sm">
+Schema Markup giúp Googlebot hiểu ngữ cảnh dữ liệu một cách trực diện nhất mà không cần đoán qua HTML. Đoạn code JSON-LD cần được nhúng trực tiếp vào <code class="text-sky-300 font-mono">&lt;head&gt;</code>:
+</p>
+<div class="rounded-xl bg-black/70 border border-white/10 p-4 font-mono text-xs sm:text-sm text-sky-300 overflow-x-auto">
+<pre><code>&lt;script type="application/ld+json"&gt;
+{
+"@context": "https://schema.org",
+"@type": "TechArticle",
+"headline": "Lập trình trong SEO: Kỹ thuật tối ưu mã nguồn chuyên sâu",
+"image": "https://example.com/images/seo-coding.webp",
+"author": {
+"@type": "Person",
+"name": "Chuyên gia Kỹ thuật SEO"
+},
+"publisher": {
+"@type": "Organization",
+"name": "Công ty SEO",
+"logo": {
+"@type": "ImageObject",
+"url": "https://example.com/logo.png"
+}
+},
+"mainEntityOfPage": {
+"@type": "WebPage",
+"@id": "https://example.com/lap-trinh-in-seo"
+}
+}
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+
+<!-- CODE C -->
+<div class="space-y-2 pt-4">
+<h3 class="font-bold text-emerald-300 text-lg">C. Tối ưu hóa Nhúng Tài nguyên (JavaScript & CSS)</h3>
+<p class="text-slate-300 text-sm">
+Tránh việc nạp các tệp script không cần thiết gây nghẽn quá trình dựng hình (Render-blocking):
+</p>
+<div class="rounded-xl bg-black/70 border border-white/10 p-4 font-mono text-xs sm:text-sm text-amber-200 overflow-x-auto">
+<pre><code>&lt;!-- Defer JavaScript để không chặn tiến trình Parse HTML --&gt;
+&lt;script src="/assets/js/main.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- Preconnect tới các CDN bên thứ ba để giảm latency DNS/TLS --&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+
+&lt;!-- Tối ưu hóa Lazy-loading Hình ảnh native của trình duyệt --&gt;
+&lt;img src="photo.webp" alt="Mô tả chuẩn SEO" width="800" height="600" loading="lazy" decoding="async"&gt;</code></pre>
+</div>
+</div>
+
+<!-- CODE D -->
+<div class="space-y-2 pt-4">
+<h3 class="font-bold text-purple-300 text-lg">D. Khai báo thẻ Meta & Canonical Tags</h3>
+<p class="text-slate-300 text-sm">
+Đảm bảo giải quyết triệt để vấn đề trùng lặp nội dung (Duplicate Content):
+</p>
+<div class="rounded-xl bg-black/70 border border-white/10 p-4 font-mono text-xs sm:text-sm text-purple-200 overflow-x-auto">
+<pre><code>&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+&lt;title&gt;Lập trình trong SEO: Hướng dẫn Kỹ thuật chuyên sâu&lt;/title&gt;
+&lt;meta name="description" content="Tối ưu hóa mã nguồn, cấu trúc DOM, JSON-LD và hiệu năng Core Web Vitals bằng kỹ thuật lập trình SEO bài bản."&gt;
+&lt;link rel="canonical" href="https://domain.com/lap-trinh-trong-seo/"&gt;
+&lt;meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"&gt;
+&lt;/head&gt;</code></pre>
+</div>
+</div>
+</section>
+
+<!-- PHẦN 5: TỐI ƯU SERVER & HTTP HEADERS -->
+<section id="server-optimization" class="glass-article-card p-6 sm:p-10 space-y-6">
+<div class="border-b border-white/10 pb-4">
+<span class="text-xs font-mono text-sky-400 font-semibold uppercase tracking-widest">SECTION 05</span>
+<h2 class="section-title text-2xl sm:text-3xl mt-1">
+<i class="fa-solid fa-server text-slate-300 text-xl"></i>
+5. Tối ưu Server & Cấu hình HTTP Headers
+</h2>
+</div>
+
+<p class="text-slate-200">
+Kỹ thuật lập trình SEO nâng cao đòi hỏi can thiệp ở cấp độ Máy chủ (Server Level):
+</p>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+<div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10">
+<div class="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300 text-lg mb-4">
+<i class="fa-solid fa-database"></i>
+</div>
+<h3 class="font-bold text-white text-lg mb-2">Cấu hình Caching (Cache-Control)</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+Khai báo tài nguyên tĩnh (Images, CSS, JS) để trình duyệt lưu trữ local, giảm tải cho server và tăng tốc độ duyệt trang cho những lần truy cập sau.
+</p>
+</div>
+
+<div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10">
+<div class="w-10 h-10 rounded-xl bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-sky-300 text-lg mb-4">
+<i class="fa-solid fa-network-wired"></i>
+</div>
+<h3 class="font-bold text-white text-lg mb-2">HTTP/2 hoặc HTTP/3</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+Bật giao thức HTTP/2 trở lên trên Web Server (Nginx/LiteSpeed) để cho phép truyền tải đa luồng dữ liệu (Multiplexing) trên một kết nối TCP duy nhất.
+</p>
+</div>
+
+<div class="p-6 rounded-2xl bg-white/[0.03] border border-white/10">
+<div class="w-10 h-10 rounded-xl bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center text-emerald-300 text-lg mb-4">
+<i class="fa-solid fa-file-zipper"></i>
+</div>
+<h3 class="font-bold text-white text-lg mb-2">Brotli / Gzip Compression</h3>
+<p class="text-slate-300 text-sm leading-relaxed">
+Bật nén Brotli trên server để nén dữ liệu text (HTML, CSS, JS) xuống 15-20% dung lượng so với Gzip trước khi gửi về client.
+</p>
+</div>
+</div>
+</section>
+
+</div>
+
+<!-- JAVASCRIPT ENGINE (PARTICLE MESH CANVAS) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+const canvas = document.getElementById('particle-fluid-canvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+let particles = [];
+let mouse = { x: -1000, y: -1000, vx: 0, vy: 0, lastX: 0, lastY: 0 };
+
+function resizeCanvas() {
+width = canvas.width = window.innerWidth;
+height = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+window.addEventListener('mousemove', (e) => {
+mouse.vx = e.clientX - mouse.lastX;
+mouse.vy = e.clientY - mouse.lastY;
+mouse.x = e.clientX;
+mouse.y = e.clientY;
+mouse.lastX = e.clientX;
+mouse.lastY = e.clientY;
+});
+
+class Particle {
+constructor() {
+this.reset();
+}
+
+reset() {
+this.x = Math.random() * width;
+this.y = Math.random() * height;
+this.vx = (Math.random() - 0.5) * 0.8;
+this.vy = (Math.random() - 0.5) * 0.8;
+this.radius = Math.random() * 2 + 1;
+this.baseAlpha = Math.random() * 0.4 + 0.1;
+this.alpha = this.baseAlpha;
+}
+
+update() {
+const dx = mouse.x - this.x;
+const dy = mouse.y - this.y;
+const dist = Math.sqrt(dx * dx + dy * dy);
+const maxDist = 180;
+
+if (dist < maxDist) {
+const force = (1 - dist / maxDist) * 2;
+const angle = Math.atan2(dy, dx);
+this.vx -= Math.cos(angle) * force * 0.5;
+this.vy -= Math.sin(angle) * force * 0.5;
+this.alpha = Math.min(0.9, this.baseAlpha + force * 0.5);
+} else {
+this.alpha += (this.baseAlpha - this.alpha) * 0.05;
+}
+
+this.x += this.vx;
+this.y += this.vy;
+
+this.vx *= 0.96;
+this.vy *= 0.96;
+
+if (this.x < 0 || this.x> width || this.y < 0 || this.y> height) {
+this.reset();
+}
+}
+
+draw() {
+ctx.save();
+ctx.globalAlpha = this.alpha;
+ctx.fillStyle = '#FFFFFF';
+ctx.beginPath();
+ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+ctx.fill();
+ctx.restore();
+}
+}
+
+for (let i = 0; i < 110; i++) {
+particles.push(new Particle());
+}
+
+window.addEventListener('click', (e) => {
+for (let i = 0; i < 20; i++) {
+const p = new Particle();
+p.x = e.clientX;
+p.y = e.clientY;
+const angle = Math.random() * Math.PI * 2;
+const speed = Math.random() * 7 + 2;
+p.vx = Math.cos(angle) * speed;
+p.vy = Math.sin(angle) * speed;
+p.radius = Math.random() * 3 + 1.5;
+p.baseAlpha = 0.9;
+particles.push(p);
+}
+if (particles.length> 200) {
+particles.splice(0, 20);
+}
+});
+
+function renderCanvas() {
+ctx.clearRect(0, 0, width, height);
+
+for (let i = 0; i < particles.length; i++) {
+particles[i].update();
+particles[i].draw();
+
+for (let j = i + 1; j < particles.length; j++) {
+const dx = particles[i].x - particles[j].x;
+const dy = particles[i].y - particles[j].y;
+const dist = Math.sqrt(dx * dx + dy * dy);
+
+if (dist < 110) {
+ctx.save();
+ctx.globalAlpha = (1 - dist / 110) * 0.15;
+ctx.strokeStyle = '#FFFFFF';
+ctx.lineWidth = 0.8;
+ctx.beginPath();
+ctx.moveTo(particles[i].x, particles[i].y);
+ctx.lineTo(particles[j].x, particles[j].y);
+ctx.stroke();
+ctx.restore();
+}
+}
+}
+
+requestAnimationFrame(renderCanvas);
+}
+renderCanvas();
+});
+</script>
+</body>
+</html>
